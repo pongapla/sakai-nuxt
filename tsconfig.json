@@ -16,7 +16,7 @@
       "~/*": ["./*"],
       "@/*": ["./*"]
     },
-    "useDefineForClassFields": false // ปิดการใช้งาน useDefineForClassFields
+    "useDefineForClassFields": false
   },
   "include": ["server/**/*.ts"],
   "exclude": ["node_modules", ".nuxt", "dist"]
