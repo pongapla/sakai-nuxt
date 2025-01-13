@@ -92,11 +92,9 @@ const checkActiveRoute = (item) => {
     .layout-menuitem-icon {
         color: gray;
         font-size: 30px;
-        /* เปลี่ยนสีไอคอนของเมนู */
     }
     a, .router-link {
             color: gray;
-            /* เปลี่ยนสีลิงก์ */
     }
     .menu-item .layout-menuitem-text {
         font-size: 20px;

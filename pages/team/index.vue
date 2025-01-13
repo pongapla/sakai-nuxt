@@ -18,29 +18,7 @@
                         </div>
                     </div>
                     <div>
-                        <DataTable :value="dataTeams" :scrollable="true" :paginator="true" scrollHeight="400px"
-                            :loading="loading2" scrollDirection="both" class="mt-3">
-                            <Column field="userName" header="Username" style="min-width: 150px" frozen></Column>
-                            <Column field="name" header="Name" style="min-width: 150px" :frozen="idFrozen"></Column>
-                            <Column field="email" header="Email" style="min-width: 150px"></Column>
-                            <Column field="phone" header="Phone" style="min-width: 100px"></Column>
-                            <Column field="userType" header="User Type" style="min-width: 100px"></Column>
-                            <Column field="gender" header="Gender" style="min-width: 100px"></Column>
-                            <Column field="picture" header="picture" style="min-width: 100px">
-                                <template #body="{ data }">
-                                    <div class="flex align-items-center gap-2">
-                                        <img :alt="data.representative.name" :src="`/${data.representative.image}`"
-                                            style="width: 32px" />
-                                    </div>
-                                </template>
-                            </Column>
-                            <Column field="actions" header="Actions" style="min-width: 100px" frozen
-                                alignFrozen="right">
-                                <template #body="{ data }">
-                                    {{ data }}
-                                </template>
-                            </Column>
-                        </DataTable>
+                       User team 
                     </div>
                 </div>
             </div>
@@ -144,12 +122,10 @@
 <script setup>
 
 import { ref, onMounted } from 'vue';
-import { useToast } from 'primevue/usetoast';
-import { useConfirm } from 'primevue/useconfirm';
 
 const display = ref(false);
 const isEditMode = ref(false);
-const dataTeams = ref(null);
+const dataTeams = ref({});
 const formData = ref({
     userType: '',
     gender: '',
@@ -158,7 +134,7 @@ const formData = ref({
     password: '',
     email: '',
     phone: '',
-    picture: ''
+    namePicture: ''
 });
  
 const open = () => {
@@ -187,7 +163,8 @@ const resetForm = () => {
         name: '',
         password: '',
         email: '',
-        phone: ''
+        phone: '',
+        namePicture: ''
     };
     file.value = null;
 };
@@ -205,14 +182,11 @@ const save = () => {
 };
 
 const addUser = (formDataObject) => {
-    // API สำหรับเพิ่มข้อมูลใหม่
-    // สมมุติว่าคุณมี `$http` หรือฟังก์ชันที่ใช้ส่งข้อมูล
     console.log('Adding user...', formDataObject);
     close();
 };
 
 const updateUser = (formDataObject) => {
-    // API สำหรับแก้ไขข้อมูล
     console.log('Updating user...', formDataObject);
     close();
 };

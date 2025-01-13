@@ -1,7 +1,8 @@
 import { useApi } from './../composables/useApi';
 import { useAuthStore } from './auth.store';
-import { FetchingStatus } from '~/types/enums/FetchingStatus'; // ตรวจสอบการนำเข้าที่ถูกต้อง
-import { TSession } from '~/types/sessions/session.type'; // ตรวจสอบการนำเข้าที่ถูกต้อง
+import { FetchingStatus } from '~/types/enums/FetchingStatus';
+import { TSession } from '~/types/sessions/session.type';
+import { LoginDto } from '~/types/dtos/login.dto';
 
 export const useAuthStore = defineStore('auth', () => {
     const userName = useCookie(server.USERNAME);
