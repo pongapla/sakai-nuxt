@@ -19,7 +19,8 @@ export default defineNuxtConfig({
         compilerOptions: {
           experimentalDecorators: true
         }
-    }
+    },
+    shim: false
   },
   app: {
     head: {

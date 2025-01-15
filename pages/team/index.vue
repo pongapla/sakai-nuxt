@@ -17,8 +17,44 @@
                                 class="custom-button-size" @click="open" />
                         </div>
                     </div>
-                    <div>
-                       User team 
+                    <div class="card">
+                        <DataTable
+                            :value="formData"
+                            :rows="10"
+                            :rowHover="true"
+                            >
+                            <Column field="id" header="ID" style="width: 20px" class="font-bold"></Column>
+                            <Column field="name" header="Name" style="min-width: 30px" frozen class="font-bold"></Column>
+                            <Column field="username" header="UserName" style="width: 30px" class="font-bold"></Column>
+                            <Column field="email" header="Email" style="width: 30px" class="font-bold"></Column>
+                            <Column field="phone" header="Phone" style="width: 100px" class="font-bold"></Column>
+                            <Column header="Image">
+                                <template #body="slotProps">
+                                    <img
+                                        :src="`/images/users/${slotProps.data.namePicture || 'no-image-icon.png'}`"
+                                        :alt="slotProps.data.namePicture || 'no-image-icon.png'"
+                                        class="shadow-lg"
+                                        width="64"
+                                    />
+                                </template>
+                            </Column>
+                            <Column header="Action" style="width: 100px" class="font-bold">
+                                <template #body="slotProps">
+                                <!-- ปุ่ม Edit -->
+                                <button 
+                                    @click="editProduct(slotProps.data)" 
+                                    class="btn btn-warning btn-sm mr-2">
+                                    Edit
+                                </button>
+                                <!-- ปุ่ม Delete -->
+                                <button 
+                                    @click="deleteProduct(slotProps.data)" 
+                                    class="btn btn-danger btn-sm">
+                                    Delete
+                                </button>
+                                </template>
+                            </Column>
+                        </DataTable>
                     </div>
                 </div>
             </div>
@@ -121,22 +157,24 @@
 
 <script setup>
 
+import DataTable from 'primevue/datatable';
 import { ref, onMounted } from 'vue';
 
 const display = ref(false);
 const isEditMode = ref(false);
 const dataTeams = ref({});
-const formData = ref({
-    userType: '',
+const formData = ref([{
+    userType: 'test',
     gender: '',
-    username: '',
-    name: '',
+    username: 'test',
+    name: 'test-xxxxx',
     password: '',
-    email: '',
-    phone: '',
-    namePicture: ''
-});
+    email: 'g@gmail.com',
+    phone: '123456',
+    namePicture: 'no-image-icon.png'
+}]);
  
+
 const open = () => {
     display.value = true;
 };
