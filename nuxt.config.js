@@ -2,6 +2,20 @@ import 'dotenv/config';
 import { defineNuxtConfig } from 'nuxt/config';
 
 export default defineNuxtConfig({
+  runtimeConfig: {
+    public: {
+      GA_MEASUREMENT_ID: process.env.GA_MEASUREMENT_ID,
+      VITE_BACKEND_BASE_URL: process.env.VITE_BACKEND_BASE_URL
+    },
+    private: {
+      DB_TYPE: process.env.DB_TYPE,
+      DB_HOST: process.env.DB_HOST,
+      DB_USER: process.env.DB_USER,
+      DB_PASSWORD: process.env.DB_PASSWORD,
+      DB_PORT: process.env.DB_PORT,
+      DB_NAME: process.env.DB_NAME
+    }
+  },
   server: {
     host: '0.0.0.0',
     port: 3000
