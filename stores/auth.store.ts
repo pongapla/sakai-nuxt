@@ -22,24 +22,33 @@ export const useAuthStore = defineStore('auth', () => {
     };
 
     const login = async (loginDto: LoginDto) => {
+        
         try {
             fetchingStatus.value = FetchingStatus.fetching;
             await new Promise((resolve) => setTimeout(resolve, 100));
             const { result, data } = await api.login(loginDto);
-            console.log(result);
+            
             if (result === 'ok') {
+
                 token.value = 'DUMP TOKEN';
                 userName.value = data.userName;
                 fetchingStatus.value = FetchingStatus.success;
                 session.isLoggedIn = true;
+
             } else {
+
                 session.isLoggedIn = false;
                 fetchingStatus.value = FetchingStatus.failed;
+
             }
+
             window.open('/', '_self');
+
         } catch (error) {
+
             fetchingStatus.value = FetchingStatus.failed;
             console.error(error);
+
         }
     };
 
@@ -48,13 +57,12 @@ export const useAuthStore = defineStore('auth', () => {
         token.value = null;
         session.isLoggedIn = false;
         session.userName = undefined;
-        //message.success('Logout successful');
         return await navigateTo('/auth/login');
     };
 
     const isLoading = () => fetchingStatus.value === FetchingStatus.fetching;
 
-    return { session, login, logout, isLoading, restoreSession }; // Return the functions and state that you need
+    return { session, login, logout, isLoading, restoreSession }; 
 });
 
 export default useAuthStore;

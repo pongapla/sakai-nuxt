@@ -38,7 +38,7 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
-      title: 'ไก่ชนข่าว',
+      title: 'DPower',
       link: [
         {
           id: 'theme-css',

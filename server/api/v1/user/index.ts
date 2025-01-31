@@ -9,6 +9,6 @@ export default defineEventHandler(async (event) => {
         };
     } catch (error) {
         console.log(error);
-        return { status: 500, message: 'Internal Server Error', error: error.message };
+        return { status: 500, message: 'Internal Server Error', error };
     }
 });

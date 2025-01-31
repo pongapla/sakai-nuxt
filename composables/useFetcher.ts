@@ -1,4 +1,4 @@
-import { apiUrl, NOT_CONNECT_NETWORK, NETWORK_CONNECTION_MESSAGE } from '~/utils/constants';
+import { apiUrl, NOT_CONNECT_NETWORK, NETWORK_CONNECTION_MESSAGE } from '../utils/constants';
 import Swal from 'sweetalert2';
 const isAbsoluteURLRegex = /^(?:\w+:)\/\//;
 
@@ -48,6 +48,6 @@ export const useFetcher = () => {
 
     return {
         fetch: fetcher
-        // isLoading
+        
     };
 };

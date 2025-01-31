@@ -5,6 +5,6 @@ export type ShopLanguageDto = {
     name: string;
     detail: string;
     status: string;
-    createdAt: date;
-    updatedAt: date;
+    createdAt: Date;
+    updatedAt: Date;
 };

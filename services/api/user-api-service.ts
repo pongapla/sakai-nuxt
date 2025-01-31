@@ -1,38 +1,53 @@
-import { useFetcher } from '~/composables/useFetcher';
-import { server, apiUrl } from '~/utils/constants';
-import { UserDto } from '~/types/dtos/dtos/user/user.dot';
+import { useFetcher } from '../../composables/useFetcher';
+import { server, apiUrl } from '../../utils/constants';
+import { UserDto } from '../../types/dtos/user/user.dot';
 
 const { fetch } = useFetcher();
 
-export const getUser = async () => {
+export const getUsers = async () => {
     try {
+
         const result = await fetch(server.USER_URL);
+        
         return result;
+
     } catch (error) {
+
         console.error('Error creating user:', error);
         throw error;
+
     }
+
 };
 
-export const getUserById = async () => {
+export const getUserById = async (id) => {
+
     try {
+
         const respons = await fetch(`${server.USER_URL}/${id}`);
 
         if (!respons.ok) {
-            const errorData = await response.json();
+
+            const errorData = await respons.json();
             throw new Error(errorData.message || 'Something went wrong');
+
         }
 
-        const result = await response.json();
+        const result = await respons.json();
         return result;
+
     } catch (error) {
+
         console.error('Error creating user:', error);
         throw error;
+
     }
 };
 
 export const createUser = async (user: UserDto) => {
+
     try {
+
         const response = await fetch(server.USER_URL, {
             method: 'POST',
             headers: {
@@ -48,14 +63,19 @@ export const createUser = async (user: UserDto) => {
 
         const result = await response.json();
         return result;
+
     } catch (error) {
+
         console.error('Error creating user:', error);
         throw error;
+
     }
 };
 
 export const updateUser = async (id: string, user: UserDto) => {
+
     try {
+
         const result = await fetch(`${server.USER_URL}/${id}`, {
             method: 'PUT',
             herders: {
@@ -63,23 +83,33 @@ export const updateUser = async (id: string, user: UserDto) => {
             },
             body: JSON.stringify(user)
         });
+
     } catch (error) {
+
         console.error('Error creating user:', error);
         throw error;
+
     }
 };
 
 export const deleteUser = async (id: string) => {
+
     try {
+
         const result = await fetch(`${server.USER_URL}/${id}`, {
             method: 'DELETE',
             herders: {
                 'Content-Type': 'application/json'
             }
         });
+
         return result;
+
     } catch (error) {
+
         console.error('Error creating user:', error);
         throw error;
+
     }
+    
 };

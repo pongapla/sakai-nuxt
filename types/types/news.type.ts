@@ -1,18 +1,18 @@
 export type TNews = {
     id: number;
-    newsId: number; // Use camelCase for consistency
-    languageId: string; // Use camelCase for consistency
+    newsId: number;
+    languageId: string;
     title: string;
-    coverPicture: string; // Use camelCase for consistency
+    coverPicture: string;
     detail: string;
     view: number;
-    userId: number; // Use camelCase for consistency
+    userId: number;
     approved: boolean;
     reference: string;
     url: string;
     style: string;
-    editorData: string; // Use camelCase for consistency
+    editorData: string;
     status: string;
-    createdAt: date;
-    updatedAt: date;
+    createdAt: Date;
+    updatedAt: Date;
 };

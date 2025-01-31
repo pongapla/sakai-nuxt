@@ -5,7 +5,6 @@ import AppConfig from '@/layouts/AppConfig.vue';
 import useAuthStore from '~/stores/auth.store';
 import { useApi } from '@/composables/useApi';
 
-
 const api = useApi();
 const  useStore = useAuthStore();
 const { layoutConfig } = useLayout();
