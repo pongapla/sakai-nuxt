@@ -17,14 +17,11 @@ export const clearAuthorizationHeader = () => {
 };
 
 export const useFetcher = () => {
-    // const isLoading = ref(false)
 
     const fetcher = async (url: string, options?: RequestInit | any) => {
-        // isLoading.value = true
 
         try {
-            //* Check first url start with slash or not
-
+            
             url = url.startsWith('/') ? url : `/${url}`;
 
             const absoluteUrl = isAbsoluteURLRegex.test(url) ? url : `${apiUrl}${url}`;
@@ -33,9 +30,9 @@ export const useFetcher = () => {
                 ...fetchConfig,
                 ...options
             })) as any;
-            console.log(response);
-            console.log('page-useFetcher');
+            
             return await response;
+
         } catch (error: any) {
             Swal.fire({
                 icon: 'error',
