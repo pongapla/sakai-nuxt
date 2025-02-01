@@ -21,25 +21,32 @@
           <!-- DataTable -->
           <div>
             <DataTable
-              :value="userInfo"
-              :scrollable="true"
-              :paginator="true"
-              :totalRecords="userInfo.length"
-              :rows="10"
-              scrollHeight="400px"
-              class="mt-3"
-              emptyMessage="No users available.">
-              <Column field="id" header="ID" style="min-width: 50px" frozen></Column>
-              <Column field="gender" header="Gender" style="min-width: 200px"></Column>
-              <Column field="name" header="Name" style="min-width: 200px" frozen></Column>
-              <Column field="userName" header="Username" style="min-width: 200px"></Column>
-              <Column field="email" header="Email" style="min-width: 200px"></Column>
-              <Column field="phone" header="Phone" style="min-width: 200px"></Column>
-              <Column field="is_admin" header="Admin" style="min-width: 200px"></Column>
-              <Column field="is_shop" header="Shop" style="min-width: 200px"></Column>
-              <Column field="is_editor" header="Editor" style="min-width: 200px"></Column>
-              <Column field="picture" header="Picture" style="min-width: 200px" frozen alignFrozen="right"></Column>
-            </DataTable>
+  :value="userInfo"
+  :scrollable="true"
+  :paginator="true"
+  :totalRecords="userInfo.length"
+  :rows="10"
+  scrollHeight="400px"
+  class="mt-3"
+  emptyMessage="No users available.">
+  <Column field="id" header="ID" style="min-width: 50px" frozen></Column>
+  <Column field="gender" header="Gender" style="min-width: 200px"></Column>
+  <Column field="name" header="Name" style="min-width: 200px" frozen></Column>
+  <Column field="userName" header="Username" style="min-width: 200px"></Column>
+  <Column field="email" header="Email" style="min-width: 200px"></Column>
+  <Column field="phone" header="Phone" style="min-width: 200px"></Column>
+  <Column field="is_admin" header="Admin" style="min-width: 200px"></Column>
+  <Column field="is_shop" header="Shop" style="min-width: 200px"></Column>
+  <Column field="is_editor" header="Editor" style="min-width: 200px"></Column>
+  <Column field="picture" header="Picture" style="min-width: 200px"></Column>
+  <Column field="action" header="Action" style="width: 150px" frozen alignFrozen="right">
+    <template #body="slotProps">
+            <Button icon="pi pi-pencil" outlined rounded class="mr-2" @click="editUser(slotProps.data)" />
+            <Button icon="pi pi-trash" outlined rounded severity="danger" @click="confirmDeleteUser(slotProps.data)" />
+        </template>
+  </Column>
+</DataTable>
+
           </div>
         </div>
       </div>
@@ -137,6 +144,17 @@
                 </div>
 
             </Dialog>
+
+            <Dialog v-model:visible="deleteUserDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
+                <div class="flex items-center gap-4">
+                    <i class="pi pi-exclamation-triangle !text-3xl" />
+                    <span v-if="user">Are you sure you want to delete the selected products?</span>
+                </div>
+                <template #footer>
+                    <Button label="No" icon="pi pi-times" text @click="deleteUserDialog = false" />
+                    <Button label="Yes" icon="pi pi-check" text @click="deleteSelectedUser" />
+                </template>
+            </Dialog>
         </div>
     </div>
 </template>
@@ -155,6 +173,8 @@ const loading2 = ref(false);
 const userSearchQuery = ref('');
 const userInfo = ref<User[]>([]);
 const file = ref<File | null>(null);
+const user = ref({});
+const deleteUserDialog = ref(false);
 const formData = ref({
   name: '',
   username: '',
@@ -251,6 +271,22 @@ const updateUser = (formDataObject) => {
   // อัปเดตข้อมูลผู้ใช้ใน API
 };
 
+const editUser = (user: any) => {
+  console.log('Editing user:', user);
+  // ตั้งค่า formData ให้ตรงกับข้อมูลของผู้ใช้ที่ต้องการแก้ไข
+  formData.value = { ...user };
+  isEditMode.value = true;
+  open();  // เปิด dialog
+};
+
+const confirmDeleteUser = (user: any) => {
+  console.log('Deleting user:', user);
+  // เรียกฟังก์ชันลบข้อมูล หรือทำการลบจาก API
+};
+
+const deleteSelectedUser = () => {
+    
+};
 // ฟังก์ชันดึงข้อมูลผู้ใช้จาก API เมื่อเริ่มต้น
 onMounted(async () => {
   try {
