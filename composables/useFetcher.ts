@@ -1,5 +1,5 @@
 import { apiUrl, NOT_CONNECT_NETWORK, NETWORK_CONNECTION_MESSAGE } from '../utils/constants';
-import Swal from 'sweetalert2';
+
 const isAbsoluteURLRegex = /^(?:\w+:)\/\//;
 
 const fetchConfig = {
@@ -25,7 +25,7 @@ export const useFetcher = () => {
             url = url.startsWith('/') ? url : `/${url}`;
 
             const absoluteUrl = isAbsoluteURLRegex.test(url) ? url : `${apiUrl}${url}`;
-
+            
             const response = (await $fetch(absoluteUrl, {
                 ...fetchConfig,
                 ...options
@@ -34,16 +34,13 @@ export const useFetcher = () => {
             return await response;
 
         } catch (error: any) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'Invalid userName or Password'
-            });
+
             throw error;
         }
     };
 
     return {
+
         fetch: fetcher
         
     };

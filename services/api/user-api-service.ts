@@ -2,6 +2,7 @@ import { useFetcher } from '../../composables/useFetcher';
 import { server, apiUrl } from '../../utils/constants';
 import { UserDto } from '../../types/dtos/user/user.dot';
 
+
 const { fetch } = useFetcher();
 
 export const getUsers = async () => {
@@ -44,33 +45,29 @@ export const getUserById = async (id) => {
     }
 };
 
-export const createUser = async (user: UserDto) => {
-
+export const createUser = async (user: FormData) => {
     try {
-
-        const response = await fetch(server.USER_URL, {
+        // ใช้ URL ที่ถูกต้อง เช่น http://localhost:3000/api/v1/user/user
+        const response = await fetch('user/user', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(user)
+            body: user,
         });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || 'Something went wrong');
+        console.log(response);
+        const data = await response;
+        if (data.success) {
+            console.log(data);console.log('page user-api-service', data);
+            return data;
+        } else {
+            throw new Error('Failed to create user: ' + (data.message || 'Unknown error'));
         }
 
-        const result = await response.json();
-        return result;
-
     } catch (error) {
-
+        // จับข้อผิดพลาดและแสดงใน console
         console.error('Error creating user:', error);
-        throw error;
-
+        throw error; // ส่ง error ต่อไป
     }
 };
+
 
 export const updateUser = async (id: string, user: UserDto) => {
 

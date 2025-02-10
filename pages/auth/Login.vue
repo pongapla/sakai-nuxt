@@ -1,6 +1,6 @@
 <script setup>
 import { useLayout } from '@/layouts/composables/layout';
-import { ref, computed } from 'vue';
+import { reactive, ref, computed } from 'vue';
 import AppConfig from '@/layouts/AppConfig.vue';
 import useAuthStore from '~/stores/auth.store';
 import { useApi } from '@/composables/useApi';

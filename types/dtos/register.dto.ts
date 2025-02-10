@@ -1,7 +1,7 @@
-export type registerDto = {
-    userName string;
-    password string;
-    level string;
-    createdAt date;
-    updatedAt date;
+export type RegisterDto = {
+    userName: string;
+    password: string;
+    level: string;
+    createdAt: Date;
+    updatedAt: Date;
 }

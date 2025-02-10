@@ -1,8 +1,12 @@
 import { useApi } from './../composables/useApi';
-import { useAuthStore } from './auth.store';
-import { FetchingStatus } from '~/types/enums/FetchingStatus';
-import { TSession } from '~/types/sessions/session.type';
-import { LoginDto } from '~/types/dtos/login.dto';
+import { FetchingStatus } from '../types/enums/FetchingStatus';
+import { TSession } from '../types/sessions/session.type';
+import { LoginDto } from '../types/dtos/login.dto';
+import { server } from '../utils/constants';
+import { reactive, ref } from 'vue';
+import { defineStore } from 'pinia';
+import { useRouter } from 'vue-router';
+import { useCookie } from '#app';
 
 export const useAuthStore = defineStore('auth', () => {
     const userName = useCookie(server.USERNAME);
@@ -24,9 +28,10 @@ export const useAuthStore = defineStore('auth', () => {
     const login = async (loginDto: LoginDto) => {
         
         try {
+
             fetchingStatus.value = FetchingStatus.fetching;
             await new Promise((resolve) => setTimeout(resolve, 100));
-            const { result, data } = await api.login(loginDto);
+            const { result, data }  = await api.login(loginDto);
             
             if (result === 'ok') {
 
@@ -57,7 +62,7 @@ export const useAuthStore = defineStore('auth', () => {
         token.value = null;
         session.isLoggedIn = false;
         session.userName = undefined;
-        return await navigateTo('/auth/login');
+        return await  router.push('/auth/login');
     };
 
     const isLoading = () => fetchingStatus.value === FetchingStatus.fetching;

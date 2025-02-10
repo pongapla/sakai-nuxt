@@ -13,7 +13,9 @@ export default defineEventHandler(async (event) => {
         }
 
     });
-
+    // ครั้งแรกที่เพิ่ม User
+    //console.log(await bcrypt.hash(body.password, 10));
+    
     if (body.userName !== userData?.get('userName')) {
 
         throw createError({
@@ -24,7 +26,7 @@ export default defineEventHandler(async (event) => {
     }
 
     const passwordMatch = await bcrypt.compare(body.password, userData?.get('password'));
-    
+  
     if (!passwordMatch) {
 
         throw createError({
@@ -34,8 +36,7 @@ export default defineEventHandler(async (event) => {
 
     }
     return {
-
-        result: 'ok',
+        
         status: 'success',
         data: userData
     };

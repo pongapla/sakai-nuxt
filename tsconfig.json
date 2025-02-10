@@ -10,7 +10,9 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "types": ["@types/node"],
+    "types": [
+      "@types/node"
+    ],
     "baseUrl": ".",
     "paths": {
       "#app": ["./node_modules/nuxt/dist/app"],
@@ -19,6 +21,12 @@
     },
     "useDefineForClassFields": false
   },
-  "include": ["server/**/*.ts"],
+  "include": [
+    "server/**/*.ts",
+    "pages/**/*.ts",
+    "components/**/*.ts",
+    "store/**/*.ts",
+    "nuxt.config.ts"
+  ],
   "exclude": ["node_modules", ".nuxt", "dist"]
 }

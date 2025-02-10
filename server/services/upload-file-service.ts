@@ -2,12 +2,12 @@ import path from 'path';
 import * as fs from 'fs';
 import News from '@/server/models/news_language.model';
 
-export const uploadImage = async (file: any, doc: any) => {
+export const uploadImage = async (file: any, doc: any, urlPath: any) => {
     if (file.filename != null) {
         var fileExtention = file.filename.split('.').pop();
         doc.image = `${doc.id}.${fileExtention}`;
 
-        var newpath = path.resolve(path.resolve() + '/assets/images/news/') + '/' + doc.image;
+        var newpath = path.resolve(path.resolve() + urlPath) + '/' + doc.image;
 
         if (fs.existsSync(newpath)) {
             fs.unlinkSync(newpath);

@@ -29,27 +29,31 @@ const User = dbInstance.define('Users', {
     },
     is_admin: {
         type: DataTypes.BOOLEAN,
-        defaultValue: false // แก้ไขการพิมพ์ผิด
+        defaultValue: false
     },
     is_shop: {
         type: DataTypes.BOOLEAN,
-        defaultValue: false // แก้ไขการพิมพ์ผิด
+        defaultValue: false
+    },
+    is_registrant: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
     },
     picture: {
         type: DataTypes.STRING,
-        allowNull: true // คุณอาจไม่ต้องการใช้ defaultValue สำหรับฟิลด์นี้ หรือกำหนดค่าเริ่มต้นเป็น URL หรือข้อความที่เหมาะสม
+        allowNull: true
     },
     gender: {
         type: DataTypes.STRING,
-        allowNull: true // หากต้องการใช้ defaultValue คุณอาจตั้งเป็น 'male', 'female', หรืออื่นๆที่เหมาะสม
+        allowNull: true
     },
     email_verified: {
         type: DataTypes.BOOLEAN,
-        defaultValue: false // แก้ไขการพิมพ์ผิดและเปลี่ยนประเภทข้อมูลเป็น BOOLEAN
+        defaultValue: false
     },
     is_editor: {
         type: DataTypes.BOOLEAN,
-        defaultValue: false // แก้ไขการพิมพ์ผิด
+        defaultValue: false
     },
     status: {
         type: DataTypes.STRING,
@@ -57,11 +61,11 @@ const User = dbInstance.define('Users', {
     },
     createdAt: {
         type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW // แก้ไขการพิมพ์ผิด
+        defaultValue: DataTypes.NOW
     },
     updatedAt: {
         type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW // แก้ไขการพิมพ์ผิด
+        defaultValue: DataTypes.NOW
     }
 });
 

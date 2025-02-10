@@ -8,6 +8,7 @@ export type UserDto = {
     is_admin: boolean;
     is_shop: boolean;
     is_editor: boolean;
+    is_registrant: boolean;
     picture: string | null;
     gender: string | null;
     email_verified: boolean;
