@@ -2,7 +2,7 @@ import { Sequelize } from 'sequelize';
 
 const dbInstance = new Sequelize({
     dialect: 'mysql',
-    host: process.env.DB_HOST || '192.168.100.93',
+    host: process.env.DB_HOST || '192.168.100.95',
     port: parseInt(process.env.DB_PORT, 10), // Convert port to integer
     username: process.env.DB_USER || 'root',
     password: process.env.DB_PASSWORD || 'DPower',

@@ -1,33 +1,57 @@
-import User from '@/server/models/user.model';
-import { defineEventHandler, readBody, createError } from 'h3';
-import { uploadImage } from '~/server/services/upload-file-service';
-import { FormDataItem } from '~/types/types/user.type';
+ import User from '@/server/models/user.model';
+ import { defineEventHandler, readMultipartFormData } from 'h3';
+ import { uploadImage } from '~/server/services/upload-file-service';
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (event: any) => {
     try {
 
-        const formData: FormDataItem[] = await readBody(event); 
-        const file = formData?.find((x) => x.name === 'file');
-        const bodyRow = formData?.find((x) => x.name === 'body');
-        if (!bodyRow) return { status: 'No data found', body: 'body is required' };
-        const body = bodyRow ? JSON.parse(bodyRow.data.toString()) : null;
-        const id = body.id;
+        const formData = await readMultipartFormData(event);
+        const file = formData?.find(item => item.name === 'file');
+        const bodyRow = formData?.find(item => item.name === 'body');
+        
+        if (!bodyRow) {
+            return { status: 'No data found', body: 'body is required' };
+        }
+
+        const body = JSON.parse(bodyRow.data.toString());
+        const userId = body.id;
+
         const result = await User.update(body, {
             where: {
-                id
+                id: userId
             }
         });
-        // ตรวจสอบเรี่องรูปอีกที
-        // if (file) {
-        //     uploadIMage(file, { id: id, ...result });
-        // }
-        return {
-            status: 'success',
-            data: result
-        };
+
+        const getUser = await User.findOne({
+            where: {
+                id: userId
+            }
+        });
+          
+        if (file) {
+            const urlPath = '/public/images/users';
+            const modelName = 'User';
+            await uploadImage(file, getUser, urlPath, modelName); 
+        }
+        
+        if(result > 0) {
+
+            const updatedUser = await User.findOne({
+                where: {
+                    id: userId
+                }
+            });
+            
+            return {
+                status: 'success',
+                data: updatedUser
+            };
+        }
+        
+        
     } catch (error: any) {
         return {
-            messge: 'Error update User : ' + error.Message
+            message: 'Error update User: ' + error.message
         };
     }
 });

@@ -19,7 +19,7 @@
 
                     <!-- DataTable -->
                     <div>
-                        <DataTable :value="userInfo" :scrollable="true" :paginator="true" :totalRecords="userInfo.length" :rows="10"  class="mt-3" emptyMessage="No users available.">
+                        <DataTable :value="filteredUserInfo" :scrollable="true" :paginator="true" :totalRecords="userInfo.length" :rows="10" class="mt-3" emptyMessage="No users available." :loading="loading2">
                             <Column field="id" header="ID" style="min-width: 50px" frozen></Column>
                             <Column field="gender" header="Gender" style="min-width: 200px"></Column>
                             <Column field="name" header="Name" style="min-width: 200px" frozen></Column>
@@ -30,7 +30,11 @@
                             <Column field="is_shop" header="Shop" style="min-width: 200px"></Column>
                             <Column field="is_admin" header="Admin" style="min-width: 200px"></Column>
                             <Column field="is_editor" header="Editor" style="min-width: 200px"></Column>
-                            <Column field="picture" header="Picture" style="min-width: 200px"></Column>
+                            <Column field="picture" header="Picture" style="min-width: 200px">
+                                <template #body="slotProps">
+                                    <img :src="slotProps.data.picture ? `/images/users/${slotProps.data.picture}` : '/images/users/no-image-icon.png'" :alt="slotProps.data.image" class="w-24 rounded" width="60" height="50" />
+                                </template>
+                            </Column>
                             <Column field="action" header="Action" style="width: auto; text-align: center" frozen alignFrozen="right">
                                 <template #body="slotProps">
                                     <div class="flex justify-content-center">
@@ -49,7 +53,7 @@
     <!-- Dialog for Add/Edit User -->
     <div class="grid">
         <div class="col-12 lg:col-6">
-            <Dialog :header="isEditMode ? `Edit User` : 'New User'" v-model:visible="display" :breakpoints="{ '960px': '70vw' }" :style="{ width: '40vw', height: '80vh' }" :modal="true">
+            <Dialog :header="isEditMode ? `Edit User` : 'New User'" v-model:visible="display" :breakpoints="{ '960px': '70vw' }" :style="{ width: '40vw', height: '80vh' }" :modal="true" @hide="closeDialog">
                 <hr />
                 <div style="margin-left: 20px">
                     <div class="grid align-items-center" style="display: flex; align-items: center">
@@ -57,13 +61,13 @@
 
                         <div class="col-12 md:col-3">
                             <div class="field-radiobutton mb-0">
-                                <RadioButton id="registrant" name="is_registrant" :value="true" v-model="formData.is_registrant" />
+                                <RadioButton id="registrant" name="option" :value="true" v-model="formData.is_registrant" @change="toggleUserType('registrant')" />
                                 <label for="registrant">Registrant</label>
                             </div>
                         </div>
                         <div class="col-12 md:col-4">
                             <div class="field-radiobutton mb-0">
-                                <RadioButton id="shop" name="option" :value="true" v-model="formData.is_shop" />
+                                <RadioButton id="shop" name="option" :value="true" v-model="formData.is_shop" @change="toggleUserType('shop')" />
                                 <label for="shop">Shop</label>
                             </div>
                         </div>
@@ -72,13 +76,13 @@
                         <h5 style="margin-right: 10px; padding-top: 10px">Gender :</h5>
                         <div class="col-12 md:col-2">
                             <div class="field-radiobutton mb-0" style="margin-right: 10px">
-                                <RadioButton id="man" name="option" value="man" v-model="formData.gender" />
+                                <RadioButton id="man" name="option1" value="man" v-model="formData.gender" />
                                 <label for="man">Man</label>
                             </div>
                         </div>
                         <div class="col-12 md:col-4">
                             <div class="field-radiobutton mb-0">
-                                <RadioButton id="female" name="option" value="female" v-model="formData.gender" />
+                                <RadioButton id="female" name="option1" value="female" v-model="formData.gender" />
                                 <label for="female">Female</label>
                             </div>
                         </div>
@@ -98,7 +102,7 @@
                     <div class="grid align-items-center mt-2" style="display: flex; align-items: center">
                         <h5 style="margin-right: 0px; padding-top: 20px">Password :</h5>
                         <div class="col-12 mb-2 lg:col-8 lg:mb-0">
-                            <InputText type="password" placeholder="Password" v-model="formData.password" class="custom-input" />
+                            <InputText :disabled="isEditMode" type="password" placeholder="Password" v-model="formData.password" class="custom-input" />
                         </div>
                     </div>
                     <div class="grid align-items-center mt-2" style="display: flex; align-items: center">
@@ -116,7 +120,7 @@
                     <div class="grid align-items-center mt-2" style="display: flex; align-items: center">
                         <h5 style="margin-right: 0px; padding-top: 20px">File</h5>
                         <div class="col-12 mb-2 lg:col-8 lg:mb-0">
-                          <FileUpload ref="fileupload" mode="basic" name="picture" accept="image/*" :maxFileSize="1000000" @select="onUpload"/>
+                            <FileUpload ref="fileupload" mode="basic" name="picture" accept="image/*" :maxFileSize="1000000" @select="onUpload" />
                         </div>
                     </div>
                 </div>
@@ -129,7 +133,7 @@
             <Dialog v-model:visible="deleteUserDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
                 <div class="flex items-center gap-4">
                     <i class="pi pi-exclamation-triangle !text-3xl" />
-                    <span v-if="user">Are you sure you want to delete the selected products?</span>
+                    <span v-if="user">Are you sure you want to delete the selected user?</span>
                 </div>
                 <template #footer>
                     <Button label="No" icon="pi pi-times" style="color: red" text @click="deleteUserDialog = false" />
@@ -141,15 +145,14 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, onMounted } from 'vue';
+import { reactive, ref, onMounted, computed } from 'vue';
 import { User } from '../../types/types/user.type';
 import { useUserStore } from '../../stores/user.store';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import FileUpload from 'primevue/fileupload';
 import InputText from 'primevue/inputtext';
-import { useToast } from 'primevue/usetoast';
-
+import { useCustomToast } from '../../composables/useToast';
 
 const display = ref(false);
 const isEditMode = ref(false);
@@ -160,10 +163,11 @@ const user = ref({});
 const deleteUserDialog = ref(false);
 const userStore = useUserStore();
 const files = ref<File[]>([]);
-const toast = useToast();
+const { showSuccess, showError } = useCustomToast();
 
-// ฟังก์ชันรีเซ็ตรูปแบบข้อมูล
+
 const formData = reactive({
+    id: '',
     name: '',
     userName: '',
     email: '',
@@ -177,6 +181,7 @@ const formData = reactive({
     gender: ''
 });
 const initialFormData = {
+    id: '',
     name: '',
     userName: '',
     email: '',
@@ -194,15 +199,20 @@ const resetForm = () => {
     Object.assign(formData, initialFormData);
 };
 
-// ฟังก์ชันการค้นหาผู้ใช้
+
 const search = async () => {
     loading2.value = true;
+
     try {
-        // ฟังก์ชันกรองผู้ใช้ตามชื่อ, username หรือ email
-        const filteredUsers = userInfo.value.filter(
-            (user) => user.name.toLowerCase().includes(userSearchQuery.value.toLowerCase()) || user.email.toLowerCase().includes(userSearchQuery.value.toLowerCase()) || user.userName?.toLowerCase().includes(userSearchQuery.value.toLowerCase())
-        );
-        userInfo.value = filteredUsers;
+        if (userSearchQuery.value === '') {
+            const data = await userStore.getUsers();
+            userInfo.value = data.data;
+        } else {
+            const filteredUsers = userInfo.value.filter(
+                (user) => user.name.toLowerCase().includes(userSearchQuery.value.toLowerCase()) || user.email.toLowerCase().includes(userSearchQuery.value.toLowerCase()) || user.userName?.toLowerCase().includes(userSearchQuery.value.toLowerCase())
+            );
+            userInfo.value = filteredUsers;
+        }
     } catch (error) {
         console.error('Error searching users:', error);
     } finally {
@@ -210,106 +220,150 @@ const search = async () => {
     }
 };
 
-// ฟังก์ชันเปิด Dialog
+
 const open = () => {
     display.value = true;
 };
 
-// ฟังก์ชันปิด Dialog
+
 const closeDialog = () => {
+
     display.value = false;
     isEditMode.value = false;
     resetForm();
 };
 
-// ฟังก์ชันการอัปโหลดไฟล์
+
 const onUpload = (event) => {
-    // เมื่อการอัปโหลดสำเร็จแล้ว
+
     files.value = event.files;
 };
 
 const save = () => {
-  const formDataObject = new FormData();
+    const formDataObject = new FormData();
 
-  // ถ้าเลือกไฟล์, เพิ่มไฟล์ลงใน FormData
-  if (files.value && files.value.length > 0) {
-    // สมมติว่าเลือกไฟล์แรก
-    formDataObject.append('file', files.value[0]); // ใช้ไฟล์แรกจาก FileList
-    formData.picture = files.value[0].name; // เก็บชื่อไฟล์ใน formData
-  } else {
-    // ถ้าไม่เลือกไฟล์, ไม่ต้อง append 'file'
-    formData.picture = null; // หรือเก็บค่า null เมื่อไม่มีไฟล์
-  }
- 
-  // เพิ่มข้อมูลฟอร์มลงใน FormData (body)
-  formDataObject.append('body', JSON.stringify(formData));
+    if (files.value && files.value.length > 0) {
+        formDataObject.append('file', files.value[0]);
+        formData.picture = files.value[0].name;
+    } else {
+        formData.picture = null;
+    }
 
-  // อัปเดตหรือเพิ่มข้อมูลผู้ใช้
-  isEditMode.value ? updateUser(formDataObject) : addUser(formDataObject);
-  
-  display.value = false; // ปิด Dialog
+    formDataObject.append('body', JSON.stringify(formData));
+
+    isEditMode.value ? updateUser(formDataObject) : addUser(formDataObject);
+
+    display.value = false;
 };
 
-
-// ฟังก์ชันการเพิ่มผู้ใช้
-const addUser = async (formDataObject) => {
+const addUser = async (formDataObject: any) => {
+  console.log(formDataObject);console.log('>>>>>>>');
     try {
-        
-        // ส่งข้อมูลไปที่ userStore
-        const response = await userStore.createUser(formDataObject);
-        console.log(response);
+        const result = await userStore.createUser(formDataObject);
+        userInfo.value.push(result.data);
+        showSuccess('User added successfully!');
     } catch (error) {
-        
+
         console.error('Error while adding user: ', error.message);
         showError(error.message);
-        
+
     } finally {
-       
+
     }
 };
 
+const updateUser = async (formDataObject: any) => {
 
-// ฟังก์ชันการอัปเดตผู้ใช้
-const updateUser = async (formDataObject) => {
-    console.log('Updating user...', formDataObject);
-    
+    try {
+        const result = await userStore.updateUser(formDataObject);
+        const updatedUser = result.data;
+        const index = userInfo.value.findIndex((user) => user.id === updatedUser.id);
+
+        if (index !== -1) {
+            userInfo.value[index] = updatedUser;
+        }
+    } catch (error) {
+
+        console.error('Error while update user: ', error.message);
+        showError(error.message);
+
+    } finally {
+
+        showSuccess('User update successfully!');
+
+    }
 };
 
 const editUser = (user: any) => {
-    // ตั้งค่า formData ให้ตรงกับข้อมูลของผู้ใช้ที่ต้องการแก้ไข
+
     Object.assign(formData, user);
-    console.log(formData);
+
     isEditMode.value = true;
-    open(); // เปิด dialog
+    open();
 };
 
 const confirmDeleteUser = (user: any) => {
+
     deleteUserDialog.value = true;
-    console.log('Deleting user:', user);
-    // เรียกฟังก์ชันลบข้อมูล หรือทำการลบจาก API
+    deleteSelectedUser(user);
+
 };
 
-const deleteSelectedUser = () => {};
-// ฟังก์ชันดึงข้อมูลผู้ใช้จาก API เมื่อเริ่มต้น
+const deleteSelectedUser = async (user: any) => {
+
+    try {
+
+        deleteUserDialog.value = false;
+        const result = await userStore.deleteUser(user.id);
+
+    } catch (error) {
+
+        showError(error.message);
+
+    } finally {
+
+        showSuccess('User delete successfully!');
+
+    }
+};
+
+const filteredUserInfo = computed(() => {
+
+    return userInfo.value.filter(
+        (user) => user.name.toLowerCase().includes(userSearchQuery.value.toLowerCase()) || user.email.toLowerCase().includes(userSearchQuery.value.toLowerCase()) || user.userName?.toLowerCase().includes(userSearchQuery.value.toLowerCase())
+    );
+
+});
+
+
 onMounted(async () => {
+
     try {
 
         const data = await userStore.getUsers();
-        if (data && Array.isArray(data.users)) {
-            userInfo.value = data.users;
+        userInfo.value = data.data;
 
-        } else {
-            console.error('Users data is not in expected format:', data);
-        }
+        
     } catch (error) {
+
         console.error('Error fetching users:', error);
+
     } finally {
+
         loading2.value = false;
+
     }
 });
 
-const showError = (error) => {
-    toast.add({ severity: 'error', summary: 'Error Message', detail: error, life: 3000 });
+const toggleUserType = (type) => {
+
+    if (type === 'registrant') {
+        formData.is_shop = false;
+    }
+
+    if (type === 'shop') {
+        formData.is_registrant = false;
+    }
 };
 </script>
 

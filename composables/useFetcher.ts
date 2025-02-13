@@ -30,7 +30,7 @@ export const useFetcher = () => {
                 ...fetchConfig,
                 ...options
             })) as any;
-            
+           
             return await response;
 
         } catch (error: any) {

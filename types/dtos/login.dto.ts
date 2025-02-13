@@ -1,4 +1,4 @@
 export type LoginDto = {
-    unserName: string;
-    password: string;
+    unserName?: string;
+    password?: string;
 }

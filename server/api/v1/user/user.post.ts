@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
         const formData = await readMultipartFormData(event);
         const file = formData?.find(item => item.name === 'file');
         const bodyRow = formData?.find(item => item.name === 'body');
-    
+       
         if (!bodyRow) return { result: 'No data found', data: 'body is required' };
         const body = bodyRow ? JSON.parse(bodyRow?.data.toString()) : null;
         if (!body) return { result: 'No data found', data: 'body is required' };
@@ -25,17 +25,22 @@ export default defineEventHandler(async (event) => {
                 ]
             }
         });
+       
         if (userData) {
             throw createError({
                 status: 409,
                 message: 'Username already exists'
             });
         }
+        delete body.id;
         const result = await User.create(body);
+        console.log(result);
         if (file) {
-            const urlPath = '/assets/images/users'
-            uploadImage(file, result, urlPath);
+            const urlPath = '/public/images/users';
+            const modelName = 'User';
+            uploadImage(file, result, urlPath, modelName);
         }
+        console.log(result); console.log('>>>>>');
         return {
 
             status: 'success',
