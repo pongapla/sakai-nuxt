@@ -34,7 +34,7 @@ export default defineEventHandler(async (event) => {
         }
         delete body.id;
         const result = await User.create(body);
-        console.log(result);
+       
         if (file) {
             const urlPath = '/public/images/users';
             const modelName = 'User';

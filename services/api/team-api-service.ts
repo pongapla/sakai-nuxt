@@ -5,11 +5,9 @@ import { server, apiUrl } from '../../utils/constants';
 
 const { fetch } = useFetcher();
 
-export const getUsers = async () => {
+export const getTeams = async (start: string, limit: string) => {
     try {
-        const start = '';
-        const limit = '';
-        // ส่ง query string ในรูปแบบที่ถูกต้อง
+        
         const result = await fetch(`${server.USER_URL}?start=${start}&limit=${limit}`);
         
         return result;
@@ -23,7 +21,7 @@ export const getUsers = async () => {
 
 };
 
-export const getUserById = async (id) => {
+export const getTeamById = async (id: any) => {
 
     try {
 
@@ -38,13 +36,13 @@ export const getUserById = async (id) => {
     }
 };
 
-export const createUser = async (user: FormData) => {
+export const createTeam = async (Team: FormData) => {
     
     try {
         
         const resoult = await fetch('user/user', {
             method: 'POST',
-            body: user,
+            body: Team,
         });
         
             return resoult ;
@@ -56,20 +54,18 @@ export const createUser = async (user: FormData) => {
     }
 };
 
-
-
-export const updateUser = async (user: FormData) => {
+export const updateTeam = async (team: FormData) => {
 
     try {
 
-        const bodyString = user.get('body') as string;
+        const bodyString = team.get('body') as string;
         const jsonData = JSON.parse(bodyString);
         const id = jsonData.id;
         
         const result = await fetch(`${server.USER_URL}/${id}`, {
 
             method: 'PUT',
-            body: user
+            body: team
 
         });
 
@@ -83,7 +79,7 @@ export const updateUser = async (user: FormData) => {
     }
 };
 
-export const deleteUser = async (id: string) => {
+export const deleteTeam = async (id: string) => {
 
     try {
        

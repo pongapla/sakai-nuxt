@@ -257,7 +257,7 @@ const save = () => {
 };
 
 const addUser = async (formDataObject: any) => {
-  console.log(formDataObject);console.log('>>>>>>>');
+  
     try {
         const result = await userStore.createUser(formDataObject);
         userInfo.value.push(result.data);
@@ -343,7 +343,7 @@ onMounted(async () => {
         const data = await userStore.getUsers();
         userInfo.value = data.data;
 
-        
+
     } catch (error) {
 
         console.error('Error fetching users:', error);

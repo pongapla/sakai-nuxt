@@ -3,55 +3,42 @@
         <div class="col-12">
             <div class="card">
                 <div class="row">
+                    <Toast />
                     <div class="custom-row">
                         <div class="custom-col">
                             <h4 class="text-gray">Management Team</h4>
                         </div>
                         <div class="custom-col input-container">
-                            <InputText type="text" name="search" placeholder="Search" class="underline-input"
-                                 />
+                            <InputText type="text" name="search" placeholder="Search" class="underline-input" v-model="teamSearchQuery" />
                             <i class="pi pi-search search-icon" @click="search"></i>
                         </div>
                         <div class="custom-col rigthB">
-                            <Button label="Add User" icon="pi pi-plus" severity="success" outlined
-                                class="custom-button-size" @click="open" />
+                            <Button label="Add Team" icon="pi pi-plus" severity="success" outlined class="custom-button-size" @click="open" />
                         </div>
                     </div>
-                    <div class="card">
-                        <DataTable
-                            :value="formData"
-                            :rows="10"
-                            :rowHover="true"
-                            >
-                            <Column field="id" header="ID" style="width: 20px" class="font-bold"></Column>
-                            <Column field="name" header="Name" style="min-width: 30px" frozen class="font-bold"></Column>
-                            <Column field="username" header="UserName" style="width: 30px" class="font-bold"></Column>
-                            <Column field="email" header="Email" style="width: 30px" class="font-bold"></Column>
-                            <Column field="phone" header="Phone" style="width: 100px" class="font-bold"></Column>
-                            <Column header="Image">
+
+                    <!-- DataTable -->
+                    <div>
+                        <DataTable :value="filteredTeamInfo" :scrollable="true" paginator :totalRecords="totalRecords" :lazy="true" :rows="10" :rowsPerPageOptions="[10, 20, 50, 100]" :first="first" @page="onPage" class="mt-3" emptyMessage="No users available." :loading="loading2">
+                            <Column field="id" header="ID" style="min-width: 50px" frozen></Column>
+                            <Column field="gender" header="Gender" style="min-width: 200px"></Column>
+                            <Column field="name" header="Name" style="min-width: 200px" frozen></Column>
+                            <Column field="userName" header="Username" style="min-width: 200px"></Column>
+                            <Column field="email" header="Email" style="min-width: 200px"></Column>
+                            <Column field="phone" header="Phone" style="min-width: 200px"></Column>
+                            <Column field="is_admin" header="Admin" style="min-width: 200px"></Column>
+                            <Column field="is_editor" header="Editor" style="min-width: 200px"></Column>
+                            <Column field="picture" header="Picture" style="min-width: 200px">
                                 <template #body="slotProps">
-                                    <img
-                                        :src="`/images/users/${slotProps.data.namePicture || 'no-image-icon.png'}`"
-                                        :alt="slotProps.data.namePicture || 'no-image-icon.png'"
-                                        class="shadow-lg"
-                                        width="64"
-                                    />
+                                    <img :src="slotProps.data.picture ? `/images/users/${slotProps.data.picture}` : '/images/users/no-image-icon.png'" :alt="slotProps.data.image" class="w-24 rounded" width="60" height="50" />
                                 </template>
                             </Column>
-                            <Column header="Action" style="width: 100px" class="font-bold">
+                            <Column field="action" header="Action" style="width: auto; text-align: center" frozen alignFrozen="right">
                                 <template #body="slotProps">
-                                <!-- ปุ่ม Edit -->
-                                <button 
-                                    @click="editProduct(slotProps.data)" 
-                                    class="btn btn-warning btn-sm mr-2">
-                                    Edit
-                                </button>
-                                <!-- ปุ่ม Delete -->
-                                <button 
-                                    @click="deleteProduct(slotProps.data)" 
-                                    class="btn btn-danger btn-sm">
-                                    Delete
-                                </button>
+                                    <div class="flex justify-content-center">
+                                        <Button icon="pi pi-pencil" outlined rounded class="mr-2" @click="editTeam(slotProps.data)" />
+                                        <Button icon="pi pi-trash" outlined rounded severity="danger" @click="confirmDeleteTeam(slotProps.data)" />
+                                    </div>
                                 </template>
                             </Column>
                         </DataTable>
@@ -61,176 +48,337 @@
         </div>
     </div>
 
+    <!-- Dialog for Add/Edit Team -->
     <div class="grid">
         <div class="col-12 lg:col-6">
-            <Dialog :header="isEditMode ? 'Edit User' : 'New User'" v-model:visible="display"
-                :breakpoints="{ '960px': '70vw' }" :style="{ width: '40vw', height: '80vh' }" :modal="true">
-                <hr>
-                <div style="margin-left: 20px;">
-                    <div class="grid align-items-center" style="display: flex; align-items: center;">
+            <Dialog :header="isEditMode ? `Edit Team` : 'New Team'" v-model:visible="display" :breakpoints="{ '960px': '70vw' }" :style="{ width: '40vw', height: '80vh' }" :modal="true" @hide="closeDialog">
+                <hr />
+                <div style="margin-left: 20px">
+                    <div class="grid align-items-center" style="display: flex; align-items: center">
+                        <h5 style="margin-right: 10px; padding-top: 10px">User Type :</h5>
 
-                        <h5 style="margin-right: 10px; padding-top: 10px;">User Type :</h5>
-
-                        <div class="col-12 md:col-2">
+                        <div class="col-12 md:col-3">
                             <div class="field-radiobutton mb-0">
-                                <RadioButton id="option1" name="option" value="editor" v-model="formData.userType" />
-                                <label for="option1">Editor</label>
+                                <RadioButton id="editor" name="option" :value="true" v-model="formData.is_editor" @change="toggleUserType('editor')" />
+                                <label for="editor">Editor</label>
                             </div>
                         </div>
                         <div class="col-12 md:col-4">
                             <div class="field-radiobutton mb-0">
-                                <RadioButton id="option2" name="option" value="admin" v-model="formData.userType" />
-                                <label for="option2">Admin</label>
+                                <RadioButton id="admin" name="option" :value="true" v-model="formData.is_admin" @change="toggleUserType('admin')" />
+                                <label for="shop">Admin</label>
                             </div>
                         </div>
                     </div>
-                    <div class="grid align-items-center mt-2" style="display: flex; align-items: center;">
-                        <h5 style="margin-right: 10px; padding-top: 10px;">Gender :</h5>
+                    <div class="grid align-items-center mt-2" style="display: flex; align-items: center">
+                        <h5 style="margin-right: 10px; padding-top: 10px">Gender :</h5>
                         <div class="col-12 md:col-2">
-                            <div class="field-radiobutton mb-0" style="margin-right: 10px;">
-                                <RadioButton id="option1" name="option" value="editor" v-model="formData.gender" />
-                                <label for="option1">Man</label>
+                            <div class="field-radiobutton mb-0" style="margin-right: 10px">
+                                <RadioButton id="man" name="option1" value="man" v-model="formData.gender" />
+                                <label for="man">Man</label>
                             </div>
                         </div>
                         <div class="col-12 md:col-4">
                             <div class="field-radiobutton mb-0">
-                                <RadioButton id="option2" name="option" value="admin" v-model="formData.gender" />
-                                <label for="option2">Female</label>
+                                <RadioButton id="female" name="option1" value="female" v-model="formData.gender" />
+                                <label for="female">Female</label>
                             </div>
                         </div>
                     </div>
-                    <div class="grid align-items-center mt-2" style="display: flex; align-items: center;">
-                        <h5 style="margin-right: 0px; padding-top: 20px;">Username:</h5>
+                    <div class="grid align-items-center mt-2" style="display: flex; align-items: center">
+                        <h5 style="margin-right: 0px; padding-top: 20px">Username :</h5>
                         <div class="col-12 mb-2 lg:col-8 lg:mb-0">
-                            <InputText type="text" placeholder="Username" v-model="formData.username"
-                                :style="{ border: 'none', borderBottom: '1px solid #ccc', borderRadius: '0', width: '100%' }" />
+                            <InputText type="text" placeholder="Username" v-model="formData.userName" class="custom-input" />
                         </div>
 
                     </div>
-                    <div class="grid align-items-center mt-2" style="display: flex; align-items: center;">
-                        <h5 style="margin-right: 0px; padding-top: 20px;">Name:</h5>
+                    <div class="grid align-items-center mt-2" style="display: flex; align-items: center">
+                        <h5 style="margin-right: 0px; padding-top: 20px">Name :</h5>
                         <div class="col-12 mb-2 lg:col-8 lg:mb-0">
-                            <InputText type="text" placeholder="Name" v-model="formData.name"
-                                :style="{ border: 'none', borderBottom: '1px solid #ccc', borderRadius: '0', width: '100%' }" />
+                            <InputText type="text" placeholder="Name" v-model="formData.name" class="custom-input" />
                         </div>
                     </div>
-                    <div class="grid align-items-center mt-2" style="display: flex; align-items: center;">
-                        <h5 style="margin-right: 0px; padding-top: 20px;">Password:</h5>
+                    <div class="grid align-items-center mt-2" style="display: flex; align-items: center">
+                        <h5 style="margin-right: 0px; padding-top: 20px">Password :</h5>
                         <div class="col-12 mb-2 lg:col-8 lg:mb-0">
-                            <InputText type="password" placeholder="Password" v-model="formData.password"
-                                :style="{ border: 'none', borderBottom: '1px solid #ccc', borderRadius: '0', width: '100%' }" />
+                            <InputText :disabled="isEditMode" type="password" placeholder="Password" v-model="formData.password" class="custom-input" />
                         </div>
                     </div>
-                    <div class="grid align-items-center mt-2" style="display: flex; align-items: center;">
-                        <h5 style="margin-right: 0px; padding-top: 20px;">Email:</h5>
+                    <div class="grid align-items-center mt-2" style="display: flex; align-items: center">
+                        <h5 style="margin-right: 0px; padding-top: 20px">Email :</h5>
                         <div class="col-12 mb-2 lg:col-8 lg:mb-0">
-                            <InputText type="email" placeholder="Email" v-model="formData.email"
-                                :style="{ border: 'none', borderBottom: '1px solid #ccc', borderRadius: '0', width: '100%' }" />
+                            <InputText type="email" placeholder="Email" v-model="formData.email" class="custom-input" />
                         </div>
                     </div>
-                    <div class="grid align-items-center mt-2" style="display: flex; align-items: center;">
-                        <h5 style="margin-right: 0px; padding-top: 20px;">Phone:</h5>
+                    <div class="grid align-items-center mt-2" style="display: flex; align-items: center">
+                        <h5 style="margin-right: 0px; padding-top: 20px">Phone :</h5>
                         <div class="col-12 mb-2 lg:col-8 lg:mb-0">
-                            <InputText type="text" placeholder="Phone" v-model="formData.phone"
-                                :style="{ border: 'none', borderBottom: '1px solid #ccc', borderRadius: '0', width: '100%' }" />
+                            <InputText type="text" placeholder="Phone" v-model="formData.phone" class="custom-input" />
                         </div>
                     </div>
-                    <div class="grid align-items-center mt-2" style="display: flex; align-items: center;">
-                        <h5 style="margin-right: 0px; padding-top: 20px;">File</h5>
+                    <div class="grid align-items-center mt-2" style="display: flex; align-items: center">
+                        <h5 style="margin-right: 0px; padding-top: 20px">File</h5>
                         <div class="col-12 mb-2 lg:col-8 lg:mb-0">
-                            <FileUpload mode="basic" name="userPicture" accept="image/*" :maxFileSize="1000000"
-                                @uploader="onUpload" customUpload />
+                            <FileUpload ref="fileupload" mode="basic" name="picture" accept="image/*" :maxFileSize="1000000" @select="onUpload" />
                         </div>
                     </div>
 
                 </div>
-                <div class="mt-2" style="text-align: right;">
-                    <Button label="Cancel" @click="close" icon="pi pi-times" class="p-button-outlined"
-                        :style="{ color: 'red', borderColor: 'red', marginRight: '10px' }" />
-                    <Button label="Save" @click="close" icon="pi pi-check" class="p-button-outlined" />
+                <div class="mt-2" style="text-align: right">
+                    <Button label="Cancel" @click="closeDialog" icon="pi pi-times" class="p-button-outlined" :style="{ color: 'red', borderColor: 'red', marginRight: '10px' }" />
+                    <Button label="Save" @click="save" icon="pi pi-check" class="p-button-outlined" />
                 </div>
+            </Dialog>
 
+            <Dialog v-model:visible="deleteTeamDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
+                <div class="flex items-center gap-4">
+                    <i class="pi pi-exclamation-triangle !text-3xl" />
+                    <span v-if="team">Are you sure you want to delete the selected team?</span>
+                </div>
+                <template #footer>
+                    <Button label="No" icon="pi pi-times" style="color: red" text @click="deleteTeamDialog = false" />
+                    <Button label="Yes" icon="pi pi-check" text @click="deleteSelectedTeam" />
+                </template>
             </Dialog>
         </div>
     </div>
 </template>
 
-<script setup>
-
+<script setup lang="ts">
+import { reactive, ref, onMounted, computed } from 'vue';
+import { User } from '../../types/types/user.type';
+import { useTeamStore } from '../../stores/team.store';
 import DataTable from 'primevue/datatable';
-import { ref, onMounted } from 'vue';
+import Column from 'primevue/column';
+import FileUpload from 'primevue/fileupload';
+import InputText from 'primevue/inputtext';
+import { useCustomToast } from '../../composables/useToast';
 
 const display = ref(false);
 const isEditMode = ref(false);
-const dataTeams = ref({});
-const formData = ref([{
-    userType: 'test',
-    gender: '',
-    username: 'test',
-    name: 'test-xxxxx',
+const loading2 = ref(false);
+const teamSearchQuery = ref('');
+const teamInfo = ref<User[]>([]);
+const team = ref({});
+const deleteTeamDialog = ref(false);
+const teamStore = useTeamStore();
+const files = ref<File[]>([]);
+const first = ref(0);
+const rows = ref(10);
+const totalRecords = ref(0);
+
+
+const { showSuccess, showError } = useCustomToast();
+
+const onPage = (event) => {
+  first.value = event.first;
+  rows.value = event.rows;
+  loadPageData();
+};
+
+const loadPageData = async () => {
+  loading2.value = true;
+  
+  try {
+   
+    const response = await teamStore.getTeams(first.value.toString(),rows.value.toString());
+    if (response.status === 'success') {
+
+      teamInfo.value = response.data;
+      totalRecords.value = response.totalCount;
+      const start = first.value;
+      const end = start + rows.value;
+    }
+  } catch (error) {
+    console.error('Error loading page data:', error);
+  } finally {
+    loading2.value = false;
+  }
+};
+
+const formData = reactive({
+    id: '',
+    name: '',
+    userName: '',
+    email: '',
+    phone: '',
+    is_registrant: false,
+    is_shop: false,
+    is_admin: false,
+    is_editor: false,
     password: '',
-    email: 'g@gmail.com',
-    phone: '123456',
-    namePicture: 'no-image-icon.png'
-}]);
- 
+    picture: null as any,
+    gender: ''
+});
+
+const initialFormData = {
+    id: '',
+    name: '',
+    userName: '',
+    email: '',
+    phone: '',
+    is_registrant: false,
+    is_shop: false,
+    is_admin: false,
+    is_editor: false,
+    password: '',
+    picture: null,
+    gender: ''
+};
+
+const resetForm = () => {
+    Object.assign(formData, initialFormData);
+};
+
+const search = async () => {
+    loading2.value = true;
+
+    try {
+        if (teamSearchQuery.value === '') {
+            const data = await teamStore.getTeams(first.value.toString(),rows.value.toString());
+            teamInfo.value = data.data;
+        } else {
+            
+            const filteredTeams = teamInfo.value.filter(
+                (team) =>
+                    team.name.toLowerCase().includes(teamSearchQuery.value.toLowerCase()) ||
+                    team.email.toLowerCase().includes(teamSearchQuery.value.toLowerCase()) ||
+                    team.userName?.toLowerCase().includes(teamSearchQuery.value.toLowerCase())
+            );
+            teamInfo.value = filteredTeams;
+        }
+    } catch (error) {
+        console.error('Error searching users:', error);
+    } finally {
+        loading2.value = false;
+    }
+};
+
 
 const open = () => {
     display.value = true;
 };
-const close = () => {
+
+const closeDialog = () => {
     display.value = false;
+    isEditMode.value = false;
+    resetForm();
 };
 
-const openDialog = (userData) => {
-    if (userData) {
-        isEditMode.value = true;
-        formData.value = { ...userData };
-    } else {
-        isEditMode.value = false;
-        resetForm();
-    }
-    display.value = true;
-};
-
-const resetForm = () => {
-    formData.value = {
-        userType: '',
-        gender: '',
-        username: '',
-        name: '',
-        password: '',
-        email: '',
-        phone: '',
-        namePicture: ''
-    };
-    file.value = null;
-};
-
-const handleFileUpload = (event) => {
-    file.value = event.files[0];
+const onUpload = (event) => {
+    files.value = event.files;
 };
 
 const save = () => {
     const formDataObject = new FormData();
-    formDataObject.append('file', file.value);
-    formDataObject.append('body', JSON.stringify(formData.value));
 
-    isEditMode.value ? updateUser(formDataObject) : addUser(formDataObject);
+    if (files.value && files.value.length > 0) {
+        formDataObject.append('file', files.value[0]);
+        formData.picture = files.value[0].name;
+    } else {
+        formData.picture = null;
+    }
+
+    formDataObject.append('body', JSON.stringify(formData));
+
+    isEditMode.value ? updateTeam(formDataObject) : addTeam(formDataObject);
+
+    display.value = false;
 };
 
-const addUser = (formDataObject) => {
-    console.log('Adding user...', formDataObject);
-    close();
+const addTeam = async (formDataObject: any) => {
+    try {
+        const result = await teamStore.createTeam(formDataObject);
+        teamInfo.value.push(result.data);
+        showSuccess('User added successfully!');
+    } catch (error) {
+        console.error('Error while adding user: ', error.message);
+        showError(error.message);
+    } finally {
+    }
 };
 
-const updateUser = (formDataObject) => {
-    console.log('Updating user...', formDataObject);
-    close();
+const updateTeam = async (formDataObject: any) => {
+    try {
+        const result = await teamStore.updateTeam(formDataObject);
+        const updatedUser = result.data;
+        const index = teamInfo.value.findIndex((user) => user.id === updatedUser.id);
+
+        if (index !== -1) {
+            teamInfo.value[index] = updatedUser;
+        }
+    } catch (error) {
+        console.error('Error while update team: ', error.message);
+        showError(error.message);
+    } finally {
+        showSuccess('Team update successfully!');
+    }
+};
+
+const editTeam = (team: any) => {
+    Object.assign(formData, team);
+
+    isEditMode.value = true;
+    open();
+};
+
+const confirmDeleteTeam = (team: any) => {
+    deleteTeamDialog.value = true;
+    deleteSelectedTeam(team);
+};
+
+const deleteSelectedTeam = async (team: any) => {
+    try {
+        deleteTeamDialog.value = false;
+        const result = await teamStore.deleteTeam(team.id);
+    } catch (error) {
+        showError(error.message);
+    } finally {
+        showSuccess('Team delete successfully!');
+    }
+};
+
+const filteredTeamInfo = computed(() => {
+    const filteredData = teamInfo.value.filter(
+        (team) =>
+            team.name.toLowerCase().includes(teamSearchQuery.value.toLowerCase()) ||
+            team.email.toLowerCase().includes(teamSearchQuery.value.toLowerCase()) ||
+            team.userName?.toLowerCase().includes(teamSearchQuery.value.toLowerCase())
+    );
+    
+    return filteredData; // Apply pagination after filtering
+});
+
+
+onMounted(async () => {
+    try {
+
+        loading2.value = true;
+        const data = await teamStore.getTeams(first.value.toString(),rows.value.toString());
+        teamInfo.value = data.data;
+        totalRecords.value = data.totalCount;
+        const start = first.value;
+        const end = start + rows.value;
+    } catch (error) {
+        console.error('Error fetching users:', error);
+    } finally {
+        loading2.value = false;
+    }
+});
+
+const toggleUserType = (type) => {
+    if (type === 'editor') {
+        formData.is_editor = false;
+    }
+
+    if (type === 'admin') {
+        formData.is_admin = false;
+    }
 };
 </script>
 
 <style scoped>
+/* สไตล์สำหรับหน้าจอ */
 .custom-row {
     display: flex;
     justify-content: space-between;
@@ -251,21 +399,15 @@ const updateUser = (formDataObject) => {
     width: 100%;
     border: none;
     border-bottom: 1px solid #ebe5e5;
-    /* เพิ่มความหนาของเส้น */
     outline: none;
     padding-right: 40px;
     box-shadow: none;
-    /* ลบเงาเพื่อไม่ให้เส้นโค้ง */
     border-radius: 0;
-    align-items: flex-end;
-    /* ลบการโค้งของมุม */
 }
 
 .underline-input::placeholder {
     font-size: 1.6rem;
-    /* ขนาดของ placeholder */
     color: #999;
-    /* สีของ placeholder */
 }
 
 .search-icon {
@@ -276,7 +418,6 @@ const updateUser = (formDataObject) => {
     font-size: 1.5rem;
     color: #999;
     cursor: pointer;
-    align-items: flex-end;
 }
 
 .rigthB {
@@ -284,75 +425,33 @@ const updateUser = (formDataObject) => {
     justify-content: flex-end;
 }
 
-.p-button {
-    margin-right: 0;
-    align-items: flex-end;
-    /* ลบ margin ขวาออกหากมี */
-}
-
 .custom-button-size {
     display: flex;
-    /* ใช้ flexbox เพื่อจัดตำแหน่ง */
     align-items: center;
-    /* จัดแนวไอคอนและข้อความในแนวตั้ง */
     justify-content: center;
-    /* จัดตำแหน่งเนื้อหาทั้งหมดให้อยู่ตรงกลาง */
     padding: 0.5rem 1rem;
-    /* ปรับขนาด padding ของปุ่ม */
     font-size: 1rem;
-    /* ปรับขนาดตัวอักษรของปุ่ม */
     height: auto;
-    /* ปรับความสูงให้เหมาะสม */
 }
 
 .custom-button-size .pi {
     font-size: 2rem;
-    /* ปรับขนาดไอคอน */
     margin-right: 0.5rem;
-    /* เพิ่มระยะห่างระหว่างไอคอนกับข้อความ */
 }
 
 .text-gray {
     color: #808080;
-    /* หรือสีเทาอื่น ๆ ตามที่คุณต้องการ */
 }
 
-input[type="text"] {
+.custom-input {
     border: none;
     border-bottom: 1px solid #ccc;
     border-radius: 0;
-    outline: none;
-    /* ลบเส้นขอบที่แสดงเมื่อ focus */
+    width: 100%;
 }
 
-input[type="text"]:hover {
-    border: none;
-    border-bottom: 1px solid #ccc;
-    border-radius: 0;
-}
-
-input[type="text"]:focus {
-    border: none;
-    border-bottom: 1px solid #007bff;
-    /* หรือสีที่คุณต้องการเมื่อ focus */
-    border-radius: 0;
+.custom-input:focus {
+    border-bottom: 2px solid #ccc;
     outline: none;
-    /* ลบเส้นขอบที่แสดงเมื่อ focus */
-}
-
-input[type="password"] {
-    border: none;
-    border-bottom: 1px solid #ccc;
-    border-radius: 0;
-    outline: none;
-    /* ลบเส้นขอบที่แสดงเมื่อ focus */
-}
-
-input[type="email"] {
-    border: none;
-    border-bottom: 1px solid #ccc;
-    border-radius: 0;
-    outline: none;
-    /* ลบเส้นขอบที่แสดงเมื่อ focus */
 }
 </style>

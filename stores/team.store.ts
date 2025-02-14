@@ -1,32 +1,32 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import { useApiUser } from './../composables/useApiUser';
+import { useApiTeam } from './../composables/useApiTeam';
 import { FetchingStatus } from '../types/enums/FetchingStatus';
 
-export const useUserStore  = defineStore("user", () => {
+
+export const  useTeamStore =  defineStore("team", () => {
 
     const fetchingStatus = ref<FetchingStatus>(FetchingStatus.init);
-    const api = useApiUser();
-    
-   
-    const createUser = async (user: FormData) => {
+    const api = useApiTeam();
+
+    const createTeam = async (team: FormData) => {
         try {
             
-            const resoult = await api.createUser(user);
+            const resoult = await api.createTeam(team);
             return resoult;
             
         } catch (error) {
             
-            console.error('Error creating user:', error);
+            console.error('Error creating team:', error);
             return error;
         }
     };
 
-
-    const getUsers = async () => {
+    
+    const getTeams = async (start: string,limit: string) => {
         try {
 
-            const result = await api.getUsers();
+            const result = await api.getTeams(start,limit);
             return result;
 
         } catch (error) {
@@ -38,11 +38,11 @@ export const useUserStore  = defineStore("user", () => {
         }
     };
 
-    const updateUser = async (user: FormData) => {
+    const updateTeam = async (team: FormData) => {
         
         try {
 
-            const result = await api.updateUser(user);
+            const result = await api.updateTeam(team);
             return result;
 
         } catch (error) {
@@ -52,10 +52,10 @@ export const useUserStore  = defineStore("user", () => {
         }
     }
 
-    const deleteUser = async (id: string) => {
+    const deleteTeam = async (id: string) => {
 
         try {
-            const result = await api.deleteUser(id);
+            const result = await api.deleteTeam(id);
             return result;
         } catch (error) {
             return error;
@@ -68,11 +68,9 @@ export const useUserStore  = defineStore("user", () => {
     return {
 
         fetchingStatus,
-        createUser,
-        getUsers,
-        updateUser,
-        deleteUser,
+        createTeam,
+        getTeams,
+        updateTeam,
+        deleteTeam,
     };
-
 });
-    
