@@ -11,5 +11,6 @@ export const server = {
     USER_URL: `user`,
     TRANSACTION_URL: `transaction`,
     TOKEN_KEY: `token`,
-    USERNAME: `userName`
+    USERNAME: `userName`,
+    CATEGORY_URL: `category`,
 };

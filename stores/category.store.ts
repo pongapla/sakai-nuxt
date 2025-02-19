@@ -1,32 +1,30 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import { useApiUser } from './../composables/useApiUser';
+import { useApiCategory } from './../composables/useApiCategory';
 import { FetchingStatus } from '../types/enums/FetchingStatus';
 
-export const useUserStore  = defineStore("user", () => {
+export const  useCategoriesStore =  defineStore("category", () => {
 
     const fetchingStatus = ref<FetchingStatus>(FetchingStatus.init);
-    const api = useApiUser();
-    
-   
-    const createUser = async (user: FormData) => {
+    const api = useApiCategory();
+
+    const createCategory = async (category: FormData) => {
         try {
             
-            const resoult = await api.createUser(user);
+            const resoult = await api.createCategory(category);
             return resoult;
             
         } catch (error) {
             
-            console.error('Error creating user:', error);
+            console.error('Error creating team:', error);
             return error;
         }
     };
 
-
-    const getUsers = async (start: string,limit: string) => {
+    const getCategories = async (start: string,limit: string) => {
         try {
-
-            const result = await api.getUsers(start,limit);
+           
+            const result = await api.getCategories(start,limit);
             return result;
 
         } catch (error) {
@@ -38,11 +36,11 @@ export const useUserStore  = defineStore("user", () => {
         }
     };
 
-    const updateUser = async (user: FormData) => {
+    const updateCategory = async (user: FormData) => {
         
         try {
 
-            const result = await api.updateUser(user);
+            const result = await api.updateCategory(user);
             return result;
 
         } catch (error) {
@@ -52,10 +50,10 @@ export const useUserStore  = defineStore("user", () => {
         }
     }
 
-    const deleteUser = async (id: string) => {
+    const deleteCategory = async (id: string) => {
 
         try {
-            const result = await api.deleteUser(id);
+            const result = await api.deleteCategory(id);
             return result;
         } catch (error) {
             return error;
@@ -68,11 +66,10 @@ export const useUserStore  = defineStore("user", () => {
     return {
 
         fetchingStatus,
-        createUser,
-        getUsers,
-        updateUser,
-        deleteUser,
+        createCategory,
+        getCategories,
+        updateCategory,
+        deleteCategory
     };
 
 });
-    

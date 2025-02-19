@@ -1,3 +1,4 @@
+import { defineEventHandler, readMultipartFormData } from 'h3';
 import CouponLanguage from '@/server/models/coupon_language.model';
 
 export default defineEventHandler(async (event) => {

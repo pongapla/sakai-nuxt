@@ -30,7 +30,7 @@ const Ads = dbInstance.define('Ads', {
     status: {
         type: DataTypes.STRING,
         allowNull: false,
-        defaultValue: 'isactive'
+        defaultValue: 'IsActive'
     },
     start_date: {
         type: DataTypes.DATE,

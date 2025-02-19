@@ -1,4 +1,5 @@
 import CategoryLanguage from '@/server/models/category_language.model';
+import { defineEventHandler, readMultipartFormData, createError } from 'h3';
 
 export default defineEventHandler(async (event) => {
     try {
@@ -12,8 +13,10 @@ export default defineEventHandler(async (event) => {
             status: result ? 'success' : 'found',
             data: result
         };
-    } catch (error) {
-        console.error(error);
-        return { status: 500, message: 'Internal Server Error', error: error.message };
+    } catch (error: any) {
+        
+        return { 
+          status: 500, 
+          message: 'Internal Server Error' + error.message };
     }
 });

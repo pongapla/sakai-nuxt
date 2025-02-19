@@ -23,7 +23,7 @@ const Shop = dbInstance.define('Shops', {
     status: {
         type: DataTypes.STRING,
         allowNull: false,
-        defaultValue: 'isactive'
+        defaultValue: 'IsActive'
     },
     createdAt: {
         type: DataTypes.DATE
@@ -35,7 +35,7 @@ const Shop = dbInstance.define('Shops', {
 
 (async () => {
     try {
-        await dbInstance.authenticate(); // ทดสอบการเชื่อมต่อ
+        await dbInstance.authenticate();
         console.log('Connection DB-Shops has been established successfully.');
 
         await Shop.sync({ force: false });

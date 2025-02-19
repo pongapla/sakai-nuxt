@@ -22,7 +22,7 @@ const News = dbInstance.define('News', {
     status: {
         type: DataTypes.STRING,
         allowNull: false,
-        defaultValue: 'isactive'
+        defaultValue: 'IsActive'
     },
     createdAt: {
         type: DataTypes.DATE,

@@ -1,15 +1,14 @@
 import { useFetcher } from '../../composables/useFetcher';
-import { server, apiUrl } from '../../utils/constants';
+import { server } from '../../utils/constants';
 
 
 
 const { fetch } = useFetcher();
 
-export const getUsers = async (start: string, limit: string) => {
+export const getCategories = async (start: string, limit: string) => {
     try {
-
-        const result = await fetch(`${server.USER_URL}?start=${start}&limit=${limit}`);
         
+        const result = await fetch(`${server.CATEGORY_URL}?start=${start}&limit=${limit}`);
         return result;
 
     } catch (error) {
@@ -21,7 +20,7 @@ export const getUsers = async (start: string, limit: string) => {
 
 };
 
-export const getUserById = async (id) => {
+export const getCategoryById = async (id: any) => {
 
     try {
 
@@ -36,38 +35,38 @@ export const getUserById = async (id) => {
     }
 };
 
-export const createUser = async (user: FormData) => {
+export const createCategory = async (category: FormData) => {
     
     try {
         
-        const resoult = await fetch('user/user', {
+        const resoult = await fetch('categories/categories', {
             method: 'POST',
-            body: user,
+            body: category,
         });
         
             return resoult ;
 
     } catch (error) {
         
-        console.error('Error creating user:', error);
+        console.error('Error creating categories:', error);
         throw error;
     }
 };
 
 
 
-export const updateUser = async (user: FormData) => {
+export const updateCategory = async (category: FormData) => {
 
     try {
 
-        const bodyString = user.get('body') as string;
+        const bodyString = category.get('body') as string;
         const jsonData = JSON.parse(bodyString);
         const id = jsonData.id;
         
-        const result = await fetch(`${server.USER_URL}/${id}`, {
+        const result = await fetch(`${server.CATEGORY_URL}/${id}`, {
 
             method: 'PUT',
-            body: user
+            body: category
 
         });
 
@@ -81,11 +80,11 @@ export const updateUser = async (user: FormData) => {
     }
 };
 
-export const deleteUser = async (id: string) => {
+export const deleteCategory = async (id: string) => {
 
     try {
        
-        const result = await fetch(`${server.USER_URL}/${id}`, {
+        const result = await fetch(`${server.CATEGORY_URL}/${id}`, {
 
             method: 'DELETE',
             headers: {

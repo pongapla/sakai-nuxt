@@ -1,31 +1,24 @@
 import { DataTypes } from 'sequelize';
 import dbInstance from '../db_instance';
 
-const CouponLanguage = dbInstance.define('Coupon_Languages', {
+
+const Language = dbInstance.define('Languages', {
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true
     },
-    coupon_id: {
-        type: DataTypes.INTEGER,
-        allowNull: true
-    },
-    language_id: {
-        type: DataTypes.INTEGER,
-        allowNull: true
-    },
-    title: {
+    lang_name: {
         type: DataTypes.STRING,
         allowNull: true
     },
-    detail: {
-        type: DataTypes.TEXT,
-        allowNull: false
-    },
-    picture: {
+    lang_flag: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
+    },
+    lang_icon: {
+        type: DataTypes.STRING,
+        allowNull: true
     },
     status: {
         type: DataTypes.STRING,
@@ -45,12 +38,12 @@ const CouponLanguage = dbInstance.define('Coupon_Languages', {
 (async () => {
     try {
         //await dbInstance.authenticate();
-        console.log('Connection DB-Coupon_Language has been established successfully.');
-        await CouponLanguage.sync({ force: false });
+        console.log('Connection DB-Language has been established successfully.');
+        await Language.sync({ force: false });
     } catch (error) {
         console.error('Unable to connect to the database or create table:', error);
     } finally {
         //await dbInstance.close();
     }
 })();
-export default CouponLanguage;
+export default Language;

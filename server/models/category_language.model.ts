@@ -22,7 +22,7 @@ const CategoryLanguage = dbInstance.define('Category_Languages', {
     status: {
         type: DataTypes.STRING,
         allowNull: false,
-        defaultValue: 'isactive'
+        defaultValue: 'IsActive'
     },
     createdAt: {
         type: DataTypes.DATE,

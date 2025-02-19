@@ -19,7 +19,7 @@
 
                     <!-- DataTable -->
                     <div>
-                        <DataTable :value="filteredUserInfo" :scrollable="true" :paginator="true" :totalRecords="userInfo.length" :rows="10" class="mt-3" emptyMessage="No users available." :loading="loading2">
+                       <DataTable :value="filteredUserInfo" :scrollable="true" paginator :totalRecords="totalRecords" :lazy="true" :rows="10" :rowsPerPageOptions="[10, 20, 50, 100]" :first="first" @page="onPage" class="mt-3" emptyMessage="No users available." :loading="loading2">
                             <Column field="id" header="ID" style="min-width: 50px" frozen></Column>
                             <Column field="gender" header="Gender" style="min-width: 200px"></Column>
                             <Column field="name" header="Name" style="min-width: 200px" frozen></Column>
@@ -53,7 +53,7 @@
     <!-- Dialog for Add/Edit User -->
     <div class="grid">
         <div class="col-12 lg:col-6">
-            <Dialog :header="isEditMode ? `Edit User` : 'New User'" v-model:visible="display" :breakpoints="{ '960px': '70vw' }" :style="{ width: '40vw', height: '80vh' }" :modal="true" @hide="closeDialog">
+            <Dialog :header="isEditMode ? `Edit User` : 'New User'" v-model:visible="display" :breakpoints="{ '960px': '70vw' }" :style="{ width: '40vw', height: '85vh' }" :modal="true" @hide="closeDialog">
                 <hr />
                 <div style="margin-left: 20px">
                     <div class="grid align-items-center" style="display: flex; align-items: center">
@@ -65,10 +65,11 @@
                                 <label for="registrant">Registrant</label>
                             </div>
                         </div>
-                        <div class="col-12 md:col-4">
+                        <div class="col-12 md:col-6">
                             <div class="field-radiobutton mb-0">
                                 <RadioButton id="shop" name="option" :value="true" v-model="formData.is_shop" @change="toggleUserType('shop')" />
-                                <label for="shop">Shop</label>
+                                <label class="mr-2" for="shop">Shop</label>
+                                <small v-if="errorMessages.userType" class="p-error">{{ errorMessages.userType }}</small>
                             </div>
                         </div>
                     </div>
@@ -80,41 +81,48 @@
                                 <label for="man">Man</label>
                             </div>
                         </div>
-                        <div class="col-12 md:col-4">
+                        <div class="col-12 md:col-8">
                             <div class="field-radiobutton mb-0">
                                 <RadioButton id="female" name="option1" value="female" v-model="formData.gender" />
-                                <label for="female">Female</label>
+                                <label class="mr-2" for="female">Female</label>
+                                <small v-if="errorMessages.gender" class="p-error">{{ errorMessages.gender }}</small>
                             </div>
                         </div>
+                        
                     </div>
                     <div class="grid align-items-center mt-2" style="display: flex; align-items: center">
                         <h5 style="margin-right: 0px; padding-top: 20px">Username :</h5>
                         <div class="col-12 mb-2 lg:col-8 lg:mb-0">
                             <InputText type="text" placeholder="Username" v-model="formData.userName" class="custom-input" />
+                            <small v-if="errorMessages.userName" class="p-error">{{ errorMessages.userName }}</small>
                         </div>
                     </div>
                     <div class="grid align-items-center mt-2" style="display: flex; align-items: center">
                         <h5 style="margin-right: 0px; padding-top: 20px">Name :</h5>
                         <div class="col-12 mb-2 lg:col-8 lg:mb-0">
                             <InputText type="text" placeholder="Name" v-model="formData.name" class="custom-input" />
+                            <small v-if="errorMessages.name" class="p-error">{{ errorMessages.name }}</small>
                         </div>
                     </div>
                     <div class="grid align-items-center mt-2" style="display: flex; align-items: center">
                         <h5 style="margin-right: 0px; padding-top: 20px">Password :</h5>
                         <div class="col-12 mb-2 lg:col-8 lg:mb-0">
                             <InputText :disabled="isEditMode" type="password" placeholder="Password" v-model="formData.password" class="custom-input" />
-                        </div>
+                            <small v-if="errorMessages.password" class="p-error">{{ errorMessages.password }}</small>
+                          </div>
                     </div>
                     <div class="grid align-items-center mt-2" style="display: flex; align-items: center">
                         <h5 style="margin-right: 0px; padding-top: 20px">Email :</h5>
                         <div class="col-12 mb-2 lg:col-8 lg:mb-0">
                             <InputText type="email" placeholder="Email" v-model="formData.email" class="custom-input" />
+                            <small v-if="errorMessages.email" class="p-error">{{ errorMessages.email }}</small>
                         </div>
                     </div>
                     <div class="grid align-items-center mt-2" style="display: flex; align-items: center">
                         <h5 style="margin-right: 0px; padding-top: 20px">Phone :</h5>
                         <div class="col-12 mb-2 lg:col-8 lg:mb-0">
                             <InputText type="text" placeholder="Phone" v-model="formData.phone" class="custom-input" />
+                            <small v-if="errorMessages.phone" class="p-error">{{ errorMessages.phone }}</small>
                         </div>
                     </div>
                     <div class="grid align-items-center mt-2" style="display: flex; align-items: center">
@@ -145,7 +153,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, onMounted, computed } from 'vue';
+import { reactive, ref, onMounted, computed, watch } from 'vue';
 import { User } from '../../types/types/user.type';
 import { useUserStore } from '../../stores/user.store';
 import DataTable from 'primevue/datatable';
@@ -153,6 +161,7 @@ import Column from 'primevue/column';
 import FileUpload from 'primevue/fileupload';
 import InputText from 'primevue/inputtext';
 import { useCustomToast } from '../../composables/useToast';
+
 
 const display = ref(false);
 const isEditMode = ref(false);
@@ -163,8 +172,37 @@ const user = ref({});
 const deleteUserDialog = ref(false);
 const userStore = useUserStore();
 const files = ref<File[]>([]);
+const first = ref(0);
+const rows = ref(10);
+const totalRecords = ref(0);
 const { showSuccess, showError } = useCustomToast();
 
+const onPage = (event: any) => {
+  first.value = event.first;
+  rows.value = event.rows;
+  loadPageData();
+};
+
+const loadPageData = async () => {
+  loading2.value = true;
+  
+  setTimeout(async () => {
+
+    try {
+
+      const response = await userStore.getUsers(first.value.toString(), rows.value.toString());
+      if (response.status === 'success') {
+        userInfo.value = response.data;
+        totalRecords.value = response.totalCount;
+      }
+
+    } catch (error) {
+      console.error('Error loading page data:', error);
+    } finally {
+      loading2.value = false;
+    }
+  }, 1000);
+};
 
 const formData = reactive({
     id: '',
@@ -195,17 +233,39 @@ const initialFormData = {
     gender: ''
 };
 
+const errorMessages = reactive({
+  name: '',
+  userName: '',
+  email: '',
+  phone: '',
+  password: '',
+  gender: '',
+  userType: ''
+})
+
+const initialErroMessages = {
+    name: '',
+    userName: '',
+    email: '',
+    phone: '',
+    password: '',
+    gender: '',
+    userType: ''
+}
+
 const resetForm = () => {
     Object.assign(formData, initialFormData);
 };
 
-
+const resetError = () => {
+    Object.assign(errorMessages, initialErroMessages);
+}
 const search = async () => {
     loading2.value = true;
 
     try {
         if (userSearchQuery.value === '') {
-            const data = await userStore.getUsers();
+            const data = await userStore.getUsers(first.value.toString(),rows.value.toString());
             userInfo.value = data.data;
         } else {
             const filteredUsers = userInfo.value.filter(
@@ -227,19 +287,26 @@ const open = () => {
 
 
 const closeDialog = () => {
-
+    
     display.value = false;
     isEditMode.value = false;
     resetForm();
+    resetError();
 };
 
 
-const onUpload = (event) => {
+const onUpload = (event: any) => {
 
     files.value = event.files;
 };
 
 const save = () => {
+
+    if (!validateForm()) {
+        console.log('Form validation failed');
+        return;
+    }
+
     const formDataObject = new FormData();
 
     if (files.value && files.value.length > 0) {
@@ -329,20 +396,26 @@ const deleteSelectedUser = async (user: any) => {
 
 const filteredUserInfo = computed(() => {
 
-    return userInfo.value.filter(
+    const filteredData = userInfo.value.filter(
         (user) => user.name.toLowerCase().includes(userSearchQuery.value.toLowerCase()) || user.email.toLowerCase().includes(userSearchQuery.value.toLowerCase()) || user.userName?.toLowerCase().includes(userSearchQuery.value.toLowerCase())
     );
-
+    return filteredData;
 });
 
 
 onMounted(async () => {
 
+    loading2.value = true;
+
+    setTimeout(async () => {
+
     try {
 
-        const data = await userStore.getUsers();
+        const data = await userStore.getUsers(first.value.toString(),rows.value.toString());
         userInfo.value = data.data;
-
+        totalRecords.value = data.totalCount;
+        const start = first.value;
+        const end = start + rows.value;
 
     } catch (error) {
 
@@ -353,9 +426,11 @@ onMounted(async () => {
         loading2.value = false;
 
     }
+}, 1000);
 });
 
-const toggleUserType = (type) => {
+
+const toggleUserType = (type: string) => {
 
     if (type === 'registrant') {
         formData.is_shop = false;
@@ -365,6 +440,125 @@ const toggleUserType = (type) => {
         formData.is_registrant = false;
     }
 };
+
+const validateForm = () => {
+    
+    let isValid = true;
+
+    if (!formData.name) {
+        errorMessages.name = 'Name is required.';
+        isValid = false;
+    }
+    if (!formData.userName) {
+        errorMessages.userName = 'Username is required.';
+        isValid = false;
+    }
+    if (!formData.email) {
+        errorMessages.email = 'Email is required.';
+        isValid = false;
+    } else {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(formData.email)) {
+            errorMessages.email = 'Please enter a valid email.';
+            isValid = false;
+        }
+    }
+    if (!formData.phone) {
+      errorMessages.phone = 'Phone number is required.';
+      isValid = false;
+    } else if (!/^\d{10}$/.test(formData.phone)) {
+      errorMessages.phone = 'Phone number must be 10 digits.';
+      isValid = false;
+    } else {
+      errorMessages.phone = '';
+    }
+    if (!formData.password) {
+      errorMessages.password = 'Password is required.';
+      isValid = false;
+    } else if (formData.password.length < 6) { 
+      errorMessages.password = 'Password must be at least 6 characters long.';
+      isValid = false;
+    } else {
+      errorMessages.password = '';
+    }
+    if (!formData.gender) {
+        errorMessages.gender = 'Gender is required.';
+        isValid = false;
+    }
+    if (!formData.is_shop && !formData.is_registrant) {
+    errorMessages.userType = 'At least one of UserType (registrant or shop) is required.';
+    isValid = false;
+    
+}
+    return isValid;
+}
+
+watch(
+  () => [ formData.is_shop, formData.is_registrant, formData.gender, formData.userName, formData.name, formData.password, formData.email, formData.phone],
+  ([ newIsregistrant, newIsshop, newGender, newUserName, newName, newPassword, newEmail, newPhone]) => {
+    
+    if (!newIsregistrant && !newIsshop) {
+      errorMessages.userType = 'At least one of UserType (registrant or shop) is required.';
+    } else {
+      errorMessages.userType = '';
+    }
+   
+    if (!newGender) {
+      errorMessages.gender = 'Gender is required.';
+    } else {
+      errorMessages.gender = '';
+    }
+    if (!newUserName) {
+      errorMessages.userName = 'UserName is required.';
+    } else {
+      errorMessages.userName = '';
+    }
+    if (!newName) {
+      errorMessages.name = 'Name is required.';
+    } else {
+      errorMessages.name = '';
+    }
+    if (typeof newPassword === 'string') {
+      if (!newPassword) {
+        errorMessages.password = 'Password is required.';
+      } else if (newPassword.length < 6) {
+        errorMessages.password = 'Password must be at least 6 characters long.';
+      } else {
+        errorMessages.password = '';
+      }
+      } else {
+        errorMessages.password = 'Invalid password format.';
+      }
+    
+    if (typeof newEmail === 'string') {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!newEmail) {
+        errorMessages.email = 'Email is required.';
+      } else if (!emailRegex.test(newEmail)) {
+        errorMessages.email = 'Invalid email format.';
+      } else {
+        errorMessages.email = '';
+      }
+    } else {
+      errorMessages.email = 'Invalid email format.';
+    }
+    if (typeof newPhone === 'string') {
+      
+      const phoneRegex = /^\d{10}$/;
+      if (!newPhone) {
+        errorMessages.phone = 'Phone number is required.';
+      } else if (!phoneRegex.test(newPhone)) {
+        errorMessages.phone = 'Phone number must be 10 digits.';
+      } else {
+        errorMessages.phone = '';
+      }
+    } else {
+      errorMessages.phone = 'Invalid phone number format.';
+    }
+
+  }
+);
+
 </script>
 
 <style scoped>
@@ -444,4 +638,5 @@ const toggleUserType = (type) => {
     border-bottom: 2px solid #ccc;
     outline: none;
 }
+
 </style>

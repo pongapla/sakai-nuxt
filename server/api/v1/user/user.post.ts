@@ -40,7 +40,7 @@ export default defineEventHandler(async (event) => {
             const modelName = 'User';
             uploadImage(file, result, urlPath, modelName);
         }
-        console.log(result); console.log('>>>>>');
+        
         return {
 
             status: 'success',

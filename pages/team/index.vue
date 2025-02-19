@@ -16,7 +16,7 @@
                             <Button label="Add Team" icon="pi pi-plus" severity="success" outlined class="custom-button-size" @click="open" />
                         </div>
                     </div>
-
+                    
                     <!-- DataTable -->
                     <div>
                         <DataTable :value="filteredTeamInfo" :scrollable="true" paginator :totalRecords="totalRecords" :lazy="true" :rows="10" :rowsPerPageOptions="[10, 20, 50, 100]" :first="first" @page="onPage" class="mt-3" emptyMessage="No users available." :loading="loading2">
@@ -51,7 +51,7 @@
     <!-- Dialog for Add/Edit Team -->
     <div class="grid">
         <div class="col-12 lg:col-6">
-            <Dialog :header="isEditMode ? `Edit Team` : 'New Team'" v-model:visible="display" :breakpoints="{ '960px': '70vw' }" :style="{ width: '40vw', height: '80vh' }" :modal="true" @hide="closeDialog">
+            <Dialog :header="isEditMode ? `Edit Team` : 'New Team'" v-model:visible="display" :breakpoints="{ '960px': '70vw' }" :style="{ width: '40vw', height: '85vh' }" :modal="true" @hide="closeDialog">
                 <hr />
                 <div style="margin-left: 20px">
                     <div class="grid align-items-center" style="display: flex; align-items: center">
@@ -59,14 +59,15 @@
 
                         <div class="col-12 md:col-3">
                             <div class="field-radiobutton mb-0">
-                                <RadioButton id="editor" name="option" :value="true" v-model="formData.is_editor" @change="toggleUserType('editor')" />
+                                <RadioButton id="editor" name="option" :value="true" v-model="formData.is_editor" @change="toggleTeamType('editor')" />
                                 <label for="editor">Editor</label>
                             </div>
                         </div>
-                        <div class="col-12 md:col-4">
+                        <div class="col-12 md:col-6">
                             <div class="field-radiobutton mb-0">
-                                <RadioButton id="admin" name="option" :value="true" v-model="formData.is_admin" @change="toggleUserType('admin')" />
-                                <label for="shop">Admin</label>
+                                <RadioButton id="admin" name="option" :value="true" v-model="formData.is_admin" @change="toggleTeamType('admin')" />
+                                <label class="mr-2" for="shop">Admin</label>
+                                <small v-if="errorMessages.userType" class="p-error">{{ errorMessages.userType }}</small>
                             </div>
                         </div>
                     </div>
@@ -78,10 +79,11 @@
                                 <label for="man">Man</label>
                             </div>
                         </div>
-                        <div class="col-12 md:col-4">
+                        <div class="col-12 md:col-6">
                             <div class="field-radiobutton mb-0">
                                 <RadioButton id="female" name="option1" value="female" v-model="formData.gender" />
-                                <label for="female">Female</label>
+                                <label class="mr-2" for="female">Female</label>
+                                <small v-if="errorMessages.gender" class="p-error">{{ errorMessages.gender }}</small>
                             </div>
                         </div>
                     </div>
@@ -89,6 +91,7 @@
                         <h5 style="margin-right: 0px; padding-top: 20px">Username :</h5>
                         <div class="col-12 mb-2 lg:col-8 lg:mb-0">
                             <InputText type="text" placeholder="Username" v-model="formData.userName" class="custom-input" />
+                            <small v-if="errorMessages.userName" class="p-error">{{ errorMessages.userName }}</small>
                         </div>
 
                     </div>
@@ -96,24 +99,28 @@
                         <h5 style="margin-right: 0px; padding-top: 20px">Name :</h5>
                         <div class="col-12 mb-2 lg:col-8 lg:mb-0">
                             <InputText type="text" placeholder="Name" v-model="formData.name" class="custom-input" />
+                            <small v-if="errorMessages.name" class="p-error">{{ errorMessages.name }}</small>
                         </div>
                     </div>
                     <div class="grid align-items-center mt-2" style="display: flex; align-items: center">
                         <h5 style="margin-right: 0px; padding-top: 20px">Password :</h5>
                         <div class="col-12 mb-2 lg:col-8 lg:mb-0">
                             <InputText :disabled="isEditMode" type="password" placeholder="Password" v-model="formData.password" class="custom-input" />
+                            <small v-if="errorMessages.password" class="p-error">{{ errorMessages.password }}</small>
                         </div>
                     </div>
                     <div class="grid align-items-center mt-2" style="display: flex; align-items: center">
                         <h5 style="margin-right: 0px; padding-top: 20px">Email :</h5>
                         <div class="col-12 mb-2 lg:col-8 lg:mb-0">
                             <InputText type="email" placeholder="Email" v-model="formData.email" class="custom-input" />
+                            <small v-if="errorMessages.email" class="p-error">{{ errorMessages.email }}</small>
                         </div>
                     </div>
                     <div class="grid align-items-center mt-2" style="display: flex; align-items: center">
                         <h5 style="margin-right: 0px; padding-top: 20px">Phone :</h5>
                         <div class="col-12 mb-2 lg:col-8 lg:mb-0">
                             <InputText type="text" placeholder="Phone" v-model="formData.phone" class="custom-input" />
+                            <small v-if="errorMessages.phone" class="p-error">{{ errorMessages.phone }}</small>
                         </div>
                     </div>
                     <div class="grid align-items-center mt-2" style="display: flex; align-items: center">
@@ -145,7 +152,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, onMounted, computed } from 'vue';
+import { reactive, ref, onMounted, computed, watch } from 'vue';
 import { User } from '../../types/types/user.type';
 import { useTeamStore } from '../../stores/team.store';
 import DataTable from 'primevue/datatable';
@@ -170,7 +177,7 @@ const totalRecords = ref(0);
 
 const { showSuccess, showError } = useCustomToast();
 
-const onPage = (event) => {
+const onPage = (event: any) => {
   first.value = event.first;
   rows.value = event.rows;
   loadPageData();
@@ -179,22 +186,24 @@ const onPage = (event) => {
 const loadPageData = async () => {
   loading2.value = true;
   
-  try {
-   
-    const response = await teamStore.getTeams(first.value.toString(),rows.value.toString());
-    if (response.status === 'success') {
+  setTimeout(async () => {
 
-      teamInfo.value = response.data;
-      totalRecords.value = response.totalCount;
-      const start = first.value;
-      const end = start + rows.value;
+    try {
+
+      const response = await teamStore.getTeams(first.value.toString(), rows.value.toString());
+      if (response.status === 'success') {
+        teamInfo.value = response.data;
+        totalRecords.value = response.totalCount;
+      }
+
+    } catch (error) {
+      console.error('Error loading page data:', error);
+    } finally {
+      loading2.value = false;
     }
-  } catch (error) {
-    console.error('Error loading page data:', error);
-  } finally {
-    loading2.value = false;
-  }
+  }, 1000);
 };
+
 
 const formData = reactive({
     id: '',
@@ -226,6 +235,26 @@ const initialFormData = {
     gender: ''
 };
 
+const errorMessages = reactive({
+  name: '',
+  userName: '',
+  email: '',
+  phone: '',
+  password: '',
+  gender: '',
+  userType: ''
+})
+
+const initialErroMessages = {
+    name: '',
+    userName: '',
+    email: '',
+    phone: '',
+    password: '',
+    gender: '',
+    userType: ''
+}
+
 const resetForm = () => {
     Object.assign(formData, initialFormData);
 };
@@ -248,7 +277,7 @@ const search = async () => {
             teamInfo.value = filteredTeams;
         }
     } catch (error) {
-        console.error('Error searching users:', error);
+        console.error('Error searching teams:', error);
     } finally {
         loading2.value = false;
     }
@@ -265,11 +294,18 @@ const closeDialog = () => {
     resetForm();
 };
 
-const onUpload = (event) => {
+const onUpload = (event: any) => {
+
     files.value = event.files;
 };
 
 const save = () => {
+
+    if (!validateForm()) {
+        console.log('Form validation failed');
+        return;
+    }
+
     const formDataObject = new FormData();
 
     if (files.value && files.value.length > 0) {
@@ -316,6 +352,7 @@ const updateTeam = async (formDataObject: any) => {
 };
 
 const editTeam = (team: any) => {
+
     Object.assign(formData, team);
 
     isEditMode.value = true;
@@ -323,14 +360,18 @@ const editTeam = (team: any) => {
 };
 
 const confirmDeleteTeam = (team: any) => {
+
     deleteTeamDialog.value = true;
     deleteSelectedTeam(team);
 };
 
 const deleteSelectedTeam = async (team: any) => {
+
     try {
+
         deleteTeamDialog.value = false;
         const result = await teamStore.deleteTeam(team.id);
+
     } catch (error) {
         showError(error.message);
     } finally {
@@ -339,6 +380,7 @@ const deleteSelectedTeam = async (team: any) => {
 };
 
 const filteredTeamInfo = computed(() => {
+
     const filteredData = teamInfo.value.filter(
         (team) =>
             team.name.toLowerCase().includes(teamSearchQuery.value.toLowerCase()) ||
@@ -346,35 +388,164 @@ const filteredTeamInfo = computed(() => {
             team.userName?.toLowerCase().includes(teamSearchQuery.value.toLowerCase())
     );
     
-    return filteredData; // Apply pagination after filtering
+    return filteredData; 
 });
 
 
 onMounted(async () => {
+
+
+    loading2.value = true;
+
+    setTimeout(async () => {
+      
     try {
 
-        loading2.value = true;
-        const data = await teamStore.getTeams(first.value.toString(),rows.value.toString());
-        teamInfo.value = data.data;
-        totalRecords.value = data.totalCount;
-        const start = first.value;
-        const end = start + rows.value;
+      const data = await teamStore.getTeams(first.value.toString(),rows.value.toString());
+      teamInfo.value = data.data;
+      totalRecords.value = data.totalCount;
+      const start = first.value;
+      const end = start + rows.value;
+         
     } catch (error) {
         console.error('Error fetching users:', error);
     } finally {
         loading2.value = false;
     }
+}, 1000);
 });
 
-const toggleUserType = (type) => {
+const toggleTeamType = (type: string) => {
+
     if (type === 'editor') {
-        formData.is_editor = false;
+        formData.is_admin = false;
     }
 
     if (type === 'admin') {
-        formData.is_admin = false;
+        formData.is_editor = false;
     }
+
 };
+
+const validateForm = () => {
+    
+    let isValid = true;
+
+    if (!formData.name) {
+        errorMessages.name = 'Name is required.';
+        isValid = false;
+    }
+    if (!formData.userName) {
+        errorMessages.userName = 'Username is required.';
+        isValid = false;
+    }
+    if (!formData.email) {
+        errorMessages.email = 'Email is required.';
+        isValid = false;
+    } else {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(formData.email)) {
+            errorMessages.email = 'Please enter a valid email.';
+            isValid = false;
+        }
+    }
+    if (!formData.phone) {
+      errorMessages.phone = 'Phone number is required.';
+      isValid = false;
+    } else if (!/^\d{10}$/.test(formData.phone)) {
+      errorMessages.phone = 'Phone number must be 10 digits.';
+      isValid = false;
+    } else {
+      errorMessages.phone = '';
+    }
+    if (!formData.password) {
+      errorMessages.password = 'Password is required.';
+      isValid = false;
+    } else if (formData.password.length < 6) { 
+      errorMessages.password = 'Password must be at least 6 characters long.';
+      isValid = false;
+    } else {
+      errorMessages.password = '';
+    }
+    if (!formData.gender) {
+        errorMessages.gender = 'Gender is required.';
+        isValid = false;
+    }
+    if (!formData.is_admin && !formData.is_editor) {
+    errorMessages.userType = 'At least one of UserType (admin or editor) is required.';
+    isValid = false;
+   
+}
+    return isValid;
+}
+
+watch(
+  () => [ formData.is_admin, formData.is_editor, formData.gender, formData.userName, formData.name, formData.password, formData.email, formData.phone],
+  ([ newIsadmin, newIseditor, newGender, newUserName, newName, newPassword, newEmail, newPhone]) => {
+    
+    if (!newIsadmin && !newIseditor) {
+      errorMessages.userType = 'At least one of UserType (admin or editor) is required.';
+    } else {
+      errorMessages.userType = '';
+    }
+   
+    if (!newGender) {
+      errorMessages.gender = 'Gender is required.';
+    } else {
+      errorMessages.gender = '';
+    }
+    if (!newUserName) {
+      errorMessages.userName = 'UserName is required.';
+    } else {
+      errorMessages.userName = '';
+    }
+
+    if (!newName) {
+      errorMessages.name = 'Name is required.';
+    } else {
+      errorMessages.name = '';
+    }
+    if (typeof newPassword === 'string') {
+      if (!newPassword) {
+        errorMessages.password = 'Password is required.';
+      } else if (newPassword.length < 6) {
+        errorMessages.password = 'Password must be at least 6 characters long.';
+      } else {
+        errorMessages.password = '';
+      }
+      } else {
+        errorMessages.password = 'Invalid password format.';
+      }
+    
+    if (typeof newEmail === 'string') {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!newEmail) {
+        errorMessages.email = 'Email is required.';
+      } else if (!emailRegex.test(newEmail)) {
+        errorMessages.email = 'Invalid email format.';
+      } else {
+        errorMessages.email = '';
+      }
+    } else {
+      errorMessages.email = 'Invalid email format.';
+    }
+    if (typeof newPhone === 'string') {
+      
+      const phoneRegex = /^\d{10}$/;
+      if (!newPhone) {
+        errorMessages.phone = 'Phone number is required.';
+      } else if (!phoneRegex.test(newPhone)) {
+        errorMessages.phone = 'Phone number must be 10 digits.';
+      } else {
+        errorMessages.phone = '';
+      }
+    } else {
+      errorMessages.phone = 'Invalid phone number format.';
+    }
+
+  }
+);
+
 </script>
 
 <style scoped>

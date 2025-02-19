@@ -1,5 +1,7 @@
 import { DataTypes } from 'sequelize';
 import dbInstance from '../db_instance';
+import CategoryLanguage from './category_language.model';
+import Language from './language.model';
 
 const Category = dbInstance.define('Categories', {
     id: {
@@ -7,14 +9,14 @@ const Category = dbInstance.define('Categories', {
         autoIncrement: true,
         primaryKey: true
     },
-    icon: {
+    group: {
         type: DataTypes.STRING,
         allowNull: true
     },
     status: {
         type: DataTypes.STRING,
         allowNull: false,
-        defaultValue: 'isactive'
+        defaultValue: 'IsActive'
     },
     createdAt: {
         type: DataTypes.DATE,
@@ -26,16 +28,24 @@ const Category = dbInstance.define('Categories', {
     }
 });
 
-(async () => {
-    try {
-        //await dbInstance.authenticate();
-        console.log('Connection DB-Category has been established successfully.');
+Category.hasMany(CategoryLanguage, { foreignKey: 'category_id' });
+CategoryLanguage.belongsTo(Category, { foreignKey: 'category_id' });
 
+CategoryLanguage.belongsTo(Language, { foreignKey: 'language_id' });
+Language.hasMany(CategoryLanguage, { foreignKey: 'language_id' });
+
+(async () => {
+
+    try {
+
+        console.log('Connection DB-Category has been established successfully.');
         await Category.sync({ force: false });
+
     } catch (error) {
         console.error('Unable to connect to the database or create table:', error);
     } finally {
         //await dbInstance.close();
     }
+    
 })();
 export default Category;

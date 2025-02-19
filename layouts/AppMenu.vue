@@ -8,10 +8,10 @@ const model = ref([
         items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/' }]
     },
     {
-        items: [{ label: 'User', icon: 'pi pi-fw pi-user', to: '/user/' }]
+        items: [{ label: 'User', icon: 'pi pi-fw pi-user', to: '/user' }]
     },
     {
-        items: [{ label: 'Team', icon: 'pi pi-fw pi-users', to: '/team/' }]
+        items: [{ label: 'Team', icon: 'pi pi-fw pi-users', to: '/team' }]
     },
     {
         items: [{ label: 'News', icon: 'pi pi-fw pi-file', to: '/news' }]
@@ -20,7 +20,7 @@ const model = ref([
         items: [{ label: 'Ads', icon: 'pi pi-fw pi-amazon', to: '/' }]
     },
     {
-        items: [{ label: 'Categories', icon: 'pi pi-fw pi-align-justify', to: '/' }]
+        items: [{ label: 'Categories', icon: 'pi pi-fw pi-align-justify', to: '/categories' }]
     },
     {
         items: [{ label: 'Privilege', icon: 'pi pi-fw pi-bookmark', to: '/' }]
