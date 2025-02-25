@@ -12,8 +12,8 @@ export const useUserStore  = defineStore("user", () => {
     const createUser = async (user: FormData) => {
         try {
             
-            const resoult = await api.createUser(user);
-            return resoult;
+            const result = await api.createUser(user);
+            return result;
             
         } catch (error) {
             

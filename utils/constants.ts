@@ -13,4 +13,5 @@ export const server = {
     TOKEN_KEY: `token`,
     USERNAME: `userName`,
     CATEGORY_URL: `category`,
+    LANGUAGE_URL: `language`
 };

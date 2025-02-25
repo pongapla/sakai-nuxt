@@ -38,8 +38,8 @@ export const getCategoryById = async (id: any) => {
 export const createCategory = async (category: FormData) => {
     
     try {
-        
-        const resoult = await fetch('categories/categories', {
+        console.log(category);
+        const resoult = await fetch('category/category', {
             method: 'POST',
             body: category,
         });

@@ -6,6 +6,7 @@ import { defineEventHandler, readMultipartFormData, createError } from 'h3';
 export default defineEventHandler(async (event) => {
 
     try {
+
         const url = event.req.url || '';
 
         const queryParams = new URLSearchParams(url.split('?')[1]);
@@ -21,37 +22,37 @@ export default defineEventHandler(async (event) => {
         }
         
         const count = await Category.count();
-        
+
         const result = await Category.findAll({
-            offset: startNum,         
-            limit: limitNum,         
+            offset: startNum,
+            limit: limitNum,
             include: [
                 {
-                    model: CategoryLanguage,  
+                    model: CategoryLanguage,
                     include: [
                         {
-                            model: Language,   
-                            attributes: ['lang_flag', 'lang_icon'] 
+                            model: Language,
+                            attributes: ['lang_flag', 'lang_icon']
                         }
                     ]
                 }
             ],
             attributes: ['group'], 
         });
-        
+
         const formattedResult = result.map((category: any) => {
+            const titles = category.Category_Languages.map((categoryLanguage: any) => categoryLanguage.title);
+            const languages = category.Category_Languages.map((categoryLanguage: any) => categoryLanguage.Language.lang_flag);
+            
             return {
                 group: category.group,
-                languages: category.Category_Languages.map((categoryLanguage: any) => {
-                    return {
-                        name: categoryLanguage.title,
-                        flag: categoryLanguage.Language.lang_flag,
-                        icon: categoryLanguage.Language.lang_icon
-                    };
-                })
+                title: titles.join(', '),
+                languageList: languages,
+                languageTitles: titles,
             };
         });
 
+       
         return {
             status: 'success',
             data: formattedResult,
@@ -60,6 +61,6 @@ export default defineEventHandler(async (event) => {
 
     } catch (error: any) {
         console.error(error);
-        return { status: 500, message: 'Internal Server Error', error: error.message };
+        return { status: 'error', message: 'Internal Server Error', error: error.message };
     }
 });

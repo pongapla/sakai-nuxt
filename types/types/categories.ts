@@ -1,5 +1,8 @@
-export type Categories = {
-    id: number;
+export type  Category = {
+    group: string;
     title: string;
-    language: string;
-}
+    languageList: string[];        
+    languageTitles: string[];     
+    currentLang: string;           
+  }
+  

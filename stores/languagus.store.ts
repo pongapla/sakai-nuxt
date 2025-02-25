@@ -1,18 +1,16 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import { useApiCategory } from './../composables/useApiCategory';
+import { useApiLanguage } from './../composables/useApiLanguage';
 import { FetchingStatus } from '../types/enums/FetchingStatus';
 
-export const  useCategoriesStore =  defineStore("category", () => {
+export const  useApiLanguages =  defineStore("language", () => {
+    const api = useApiLanguage();
 
-    const fetchingStatus = ref<FetchingStatus>(FetchingStatus.init);
-    const api = useApiCategory();
-
-    const createCategory = async (category: FormData) => {
+    const createLanguage = async (category: FormData) => {
         try {
             
-            const result = await api.createCategory(category);
-            return result;
+            // const resoult = await api.createCategory(category);
+            // return resoult;
             
         } catch (error) {
             
@@ -21,10 +19,10 @@ export const  useCategoriesStore =  defineStore("category", () => {
         }
     };
 
-    const getCategories = async (start: string,limit: string) => {
+    const getLanguages = async () => {
         try {
            
-            const result = await api.getCategories(start,limit);
+            const result = await api.getLanguages();
             return result;
 
         } catch (error) {
@@ -36,12 +34,12 @@ export const  useCategoriesStore =  defineStore("category", () => {
         }
     };
 
-    const updateCategory = async (user: FormData) => {
+    const updateLanguage = async (user: FormData) => {
         
         try {
 
-            const result = await api.updateCategory(user);
-            return result;
+            // const result = await api.updateCategory(user);
+            // return result;
 
         } catch (error) {
             return error;
@@ -50,7 +48,7 @@ export const  useCategoriesStore =  defineStore("category", () => {
         }
     }
 
-    const deleteCategory = async (id: string) => {
+    const deleteLanguage = async (id: string) => {
 
         try {
             const result = await api.deleteCategory(id);
@@ -62,14 +60,11 @@ export const  useCategoriesStore =  defineStore("category", () => {
         }
 
     }
-
+    
     return {
-
-        fetchingStatus,
-        createCategory,
-        getCategories,
-        updateCategory,
-        deleteCategory
-    };
-
+        createLanguage,
+        getLanguages,
+        updateLanguage,
+        deleteLanguage
+    }
 });
