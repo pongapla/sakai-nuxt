@@ -36,22 +36,21 @@ export const getCategoryById = async (id: any) => {
 };
 
 export const createCategory = async (category: FormData) => {
-    
+
     try {
-        console.log(category);
-        const resoult = await fetch('category/category', {
+        const result = await fetch('category/category', {
             method: 'POST',
             body: category,
         });
-        
-            return resoult ;
 
-    } catch (error) {
-        
+        return result
+
+    } catch (error: any) {
         console.error('Error creating categories:', error);
         throw error;
     }
 };
+
 
 
 
@@ -80,16 +79,24 @@ export const updateCategory = async (category: FormData) => {
     }
 };
 
-export const deleteCategory = async (id: string) => {
+export const deleteCategory = async (data: any) => {
 
     try {
-       
-        const result = await fetch(`${server.CATEGORY_URL}/${id}`, {
+        
+        const group = data.value.group || '';
+        const lang = data.value.currentLang || '';
+        const newKey = data.value.newKey || '';
+        const result = await fetch(`${server.CATEGORY_URL}/1`, {
 
             method: 'DELETE',
             headers: {
               'Content-Type': 'application/json',
             },
+            body: JSON.stringify({
+                group: group,
+                lang: lang,
+                newKey: newKey
+            })
             
         });
         

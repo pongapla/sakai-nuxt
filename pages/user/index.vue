@@ -169,6 +169,7 @@ const loading2 = ref(false);
 const userSearchQuery = ref('');
 const userInfo = ref<User[]>([]);
 const user = ref({});
+const selectedUser = ref();
 const deleteUserDialog = ref(false);
 const userStore = useUserStore();
 const files = ref<File[]>([]);
@@ -370,18 +371,19 @@ const editUser = (user: any) => {
 };
 
 const confirmDeleteUser = (user: any) => {
-
+    
     deleteUserDialog.value = true;
-    deleteSelectedUser(user);
+    selectedUser.value = user; 
 
 };
 
-const deleteSelectedUser = async (user: any) => {
+const deleteSelectedUser = async () => {
 
+    if (!selectedUser.value) return;
     try {
 
         deleteUserDialog.value = false;
-        const result = await userStore.deleteUser(user.id);
+        const result = await userStore.deleteUser(selectedUser.value.id);
 
     } catch (error) {
 
@@ -414,8 +416,7 @@ onMounted(async () => {
         const data = await userStore.getUsers(first.value.toString(),rows.value.toString());
         userInfo.value = data.data;
         totalRecords.value = data.totalCount;
-        const start = first.value;
-        const end = start + rows.value;
+       
 
     } catch (error) {
 

@@ -167,6 +167,7 @@ const loading2 = ref(false);
 const teamSearchQuery = ref('');
 const teamInfo = ref<User[]>([]);
 const team = ref({});
+const selectTeam = ref();
 const deleteTeamDialog = ref(false);
 const teamStore = useTeamStore();
 const files = ref<File[]>([]);
@@ -362,15 +363,16 @@ const editTeam = (team: any) => {
 const confirmDeleteTeam = (team: any) => {
 
     deleteTeamDialog.value = true;
-    deleteSelectedTeam(team);
+    selectTeam.value = team;
 };
 
-const deleteSelectedTeam = async (team: any) => {
+const deleteSelectedTeam = async () => {
 
+    if(!selectTeam.value) return;
     try {
 
         deleteTeamDialog.value = false;
-        const result = await teamStore.deleteTeam(team.id);
+        const result = await teamStore.deleteTeam(selectTeam.value.id);
 
     } catch (error) {
         showError(error.message);

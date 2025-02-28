@@ -9,11 +9,20 @@ const CategoryLanguage = dbInstance.define('Category_Languages', {
     },
     category_id: {
         type: DataTypes.INTEGER,
-        allowNull: true
+        allowNull: false,
+        references: {
+            model: 'Categories',
+            key: 'id',
+        },
+        onDelete: 'CASCADE',
     },
     language_id: {
         type: DataTypes.INTEGER,
-        allowNull: true
+        allowNull: false,
+        references: {
+            model: 'Languages',
+            key: 'id',
+        },
     },
     title: {
         type: DataTypes.STRING,

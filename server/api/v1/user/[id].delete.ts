@@ -4,9 +4,7 @@ export default defineEventHandler(async (event) => {
 
     if (event.context.params && event.context.params.id) {
         const id = event.context.params.id;
-        console.log('User ID:', id);
-        
-        
+       
         const result = await User.update({ status: 'InActive' }, { where: { id } });
         
         if (result[0] > 0) {

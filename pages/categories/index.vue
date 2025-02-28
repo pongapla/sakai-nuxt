@@ -24,7 +24,7 @@
                           :scrollable="true"
                           :totalRecords="totalRecords"
                           paginator
-                          :lazy="false"
+                          :lazy="true"
                           :rows="10"
                           :rowsPerPageOptions="[10, 20, 50, 100]"
                           :first="first"
@@ -62,18 +62,28 @@
                           </Column>
                           <Column field="action" style="width: 150px; text-align: center">
                             <template #header>
-                              <span class="flex-1 text-center">Action</span>
+                              <span class="flex-1 text-center">Action Language</span>
                             </template>  
                             <template #body="slotProps">
                                   <div class="flex justify-content-center">
                                     
-                                    <Button icon="pi pi-plus" outlined rounded class="mr-1" @click="addCategory(slotProps.data)" />  
+                                    <Button icon="pi pi-plus" outlined rounded class="mr-1" @click="openCategoryLanguage(slotProps.data)" />  
                                     
                                     <Button icon="pi pi-pencil" outlined rounded class="mr-1" @click="editCategory()" />
                                     
-                                    <Button icon="pi pi-trash" outlined rounded severity="danger" @click="confirmDeleteCategory()" />
+                                    <Button icon="pi pi-trash" outlined rounded severity="danger" @click="confirmDeleteCategory(slotProps.data)" />
                                   </div>
                               </template>
+                          </Column>
+                          <Column field="action" style="width: 150px; text-align: center">
+                            <template #header>
+                              <span class="flex-1 text-center">Action Category</span>
+                            </template>
+                            <template #body="slotProps">
+                                  <div class="flex justify-content-center">
+                                    <Button icon="pi pi-trash" outlined rounded severity="danger" @click="confirmDeleteCategory(modifyData(slotProps.data))" />
+                                  </div>
+                            </template>
                           </Column>
                       </DataTable>
                   </div>
@@ -85,7 +95,7 @@
   <!-- Dialog for Add/Edit Category -->
   <div class="grid">
       <div class="col-12 lg:col-6">
-          <Dialog :header="isEditMode ? `Edit Category` : 'New Category'" v-model:visible="display" :breakpoints="{ '960px': '70vw' }" :style="{ width: '30vw', height: '40vh' }" :modal="true" @hide="closeDialog">
+          <Dialog :header="dialogHeader" v-model:visible="display" :breakpoints="{ '960px': '70vw' }" :style="{ width: '30vw', height: '40vh' }" :modal="true" @hide="closeDialog">
               <hr />
               <div style="margin-left: 20px">
                   <div class="grid align-items-center mt-2" style="display: flex; align-items: center">
@@ -120,7 +130,7 @@
           <Dialog v-model:visible="deleteCategoryLanguageDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
                 <div class="flex items-center gap-4">
                     <i class="pi pi-exclamation-triangle !text-3xl" />
-                    <span>Are you sure you want to delete the selected user?</span>
+                    <span>Are you sure you want to delete the selected category language?</span>
                 </div>
                 <template #footer>
                     <Button label="No" icon="pi pi-times" style="color: red" text @click="deleteCategoryLanguageDialog = false" />
@@ -151,7 +161,7 @@ const categorySearchQuery = ref('');
 const categoryInfo = ref<Category[]>([]);
 const selectedLangauge = ref(null);
 const languages = ref<Language[]>([]);
-const category = ref([]);
+const selectedCategory = ref();
 const deleteCategoryLanguageDialog = ref(false);
 const catergoriesStore = useCategoriesStore();
 const languagesStore = useApiLanguages();
@@ -159,7 +169,7 @@ const first = ref(0);
 const rows = ref(10);
 const totalRecords = ref(0);
 const { showSuccess, showError } = useCustomToast();
-
+const dialogHeader = ref('New Category');
 
 const onPage = (event: any) => {
   first.value = event.first;
@@ -175,7 +185,7 @@ const loadPageData = async () => {
     try {
       const data = await catergoriesStore.getCategories(first.value.toString(), rows.value.toString());
       categoryInfo.value = data.data;
-     
+      totalRecords.value = data.totalCount;
       categoryInfo.value.forEach((category: any) => {
         category.currentLang = 'TH';
       });
@@ -192,7 +202,14 @@ const open = () => {
   display.value = true;
 };
 
+const openCategoryLanguage = async (data: any) => {
+  dialogHeader.value = 'New Category Language'
+  formData.group = data.group;
+  open();
+};
+
 const closeDialog = () => {
+
   display.value = false;
   isEditMode.value = false;
   selectedLangauge.value = null;
@@ -201,14 +218,14 @@ const closeDialog = () => {
 };
 
 const formData = reactive({
-  id: '',
+
   group: '',
   title: '',
   lang_id: null as number | null,
 });
 
 const initialFormData = {
-  id: '',
+
   group: '',
   title: '',
   lang_id: null as number | null,
@@ -264,9 +281,15 @@ const save = () => {
   const formDataObject = new FormData();
   
   formDataObject.append('body', JSON.stringify(formData));
+  
+  if(formData.group) {
 
-  isEditMode.value ? updateCategory(formDataObject) : addCategory(formDataObject);
+    addCategoryLanguage(formDataObject);
+  } else {
 
+    isEditMode.value ? updateCategory(formDataObject) : addCategory(formDataObject);
+  }
+  
   display.value = false;
   
 };
@@ -274,13 +297,14 @@ const save = () => {
 const addCategory = async (formDataObject: FormData) => {
   
   try {
+       
         const result = await catergoriesStore.createCategory(formDataObject);
         const newCategory = result.data;
         newCategory.currentLang = 'TH';
         categoryInfo.value.push(newCategory);
-
+        console.log(newCategory);
         showSuccess('Category added successfully!');
-        
+
     } catch (error) {
 
         console.error('Error while adding category: ', error.message);
@@ -291,15 +315,100 @@ const addCategory = async (formDataObject: FormData) => {
     }
 };
 
+const addCategoryLanguage = async (formDataObject: FormData) => {
+
+  try {
+
+    const result = await catergoriesStore.createCategoryLanguage(formDataObject);
+    
+    if(result.status === 400){
+        showError(result.message);
+        return
+    }
+
+    const newCategoryLanguage = result.data;
+    newCategoryLanguage.currentLang = 'TH';
+        
+    const index = categoryInfo.value.findIndex(item => item.group === newCategoryLanguage.group);
+
+    if (index !== -1) {
+      categoryInfo.value[index] = newCategoryLanguage;
+    } else {
+
+      categoryInfo.value.push(newCategoryLanguage);
+    }
+        
+    showSuccess('Category-language added successfully!');
+
+  } catch (error) {
+
+    console.error('Error while adding category-language: ', error.message);
+    showError(error.message);
+    
+  } finally {
+    
+  }
+
+};
+
 const updateCategory = async (data: any) => {
   console.log(data);
 };
 
 const editCategory = () => {};
 
-const confirmDeleteCategory = () => {};
- 
-const deleteSelectedCategory = async () => {};
+const confirmDeleteCategory = async (data: any) => {
+  deleteCategoryLanguageDialog.value = true;
+  selectedCategory.value = await data;
+  
+};
+
+const modifyData = async (data: any) => {
+
+  data.newKey = '1';
+   return data;
+};
+
+const deleteSelectedCategory = async () => {
+
+  if(!selectedCategory) return; 
+
+  try {
+    
+    const flag = selectedCategory.value.currentLang;
+    const index = categoryInfo.value.findIndex(item => item.group === selectedCategory.value.group);
+    const result = await catergoriesStore.deleteCategory(selectedCategory)
+    
+    if(result.status == 'del-cat') {
+      if (index !== -1) {
+        categoryInfo.value.splice(index, 1);
+      }
+    }
+
+    if(result.status == 'del-lang') {
+      
+        if (index !== -1) {
+    
+          categoryInfo.value[index].languageList = categoryInfo.value[index].languageList.filter(lang => lang !== flag);
+          categoryInfo.value[index].languageTitles = categoryInfo.value[index].languageTitles.filter(title => {
+          const langIndex = categoryInfo.value[index].languageList.indexOf(title);
+          
+          return langIndex !== -1;
+        });
+      
+        categoryInfo[index] = {
+          ...categoryInfo[index]
+        };
+      }
+    }
+   
+  } catch (error) {
+    showError(error.message);
+  } finally {
+    deleteCategoryLanguageDialog.value = false;
+    showSuccess('Category-language delete successfully!');
+  }
+};
 
 const filteredCategoryInfo = computed(() => {
   if (categorySearchQuery.value === '') {
@@ -325,7 +434,7 @@ onMounted(async () => {
       categoryInfo.value.forEach((category: any) => {
         category.currentLang = 'TH';
       });
-
+      totalRecords.value = data.totalCount;
       //Get Language 
       const dataLanguage = await languagesStore.getLanguages();
       languages.value = dataLanguage.data
@@ -345,22 +454,33 @@ const validateForm = () => {
 
 
 const changeLanguage = (rowData: any, lang: any) => {
+
   rowData.currentLang = lang;
-  console.log(`Language changed to ${lang}`);
+
 
 };
 
 const getTitle = (rowData: any) => {
+  
+  if (!rowData.languageList || !Array.isArray(rowData.languageList) || !rowData.currentLang) {
+    return rowData.title;
+  }
+
   const langIndex = rowData.languageList.indexOf(rowData.currentLang); 
+ 
   if (langIndex !== -1) {
     return rowData.languageTitles[langIndex]; 
   }
+
+  const fallbackIndex = rowData.languageList.indexOf(rowData.languageList[0]);
+  if (fallbackIndex !== -1) {
+    return rowData.languageTitles[fallbackIndex];
+  }
+
   return rowData.title; 
 };
 
-watch(selectedLangauge, (newValue) => {
-  console.log('Selected Language ID:', newValue);  // newValue จะเป็น 'id' ของภาษาที่เลือก
-});
+
 </script>
 
 <style scoped>

@@ -28,7 +28,7 @@ const Category = dbInstance.define('Categories', {
     }
 });
 
-Category.hasMany(CategoryLanguage, { foreignKey: 'category_id' });
+Category.hasMany(CategoryLanguage, { foreignKey: 'category_id', onDelete: 'CASCADE' });
 CategoryLanguage.belongsTo(Category, { foreignKey: 'category_id' });
 
 CategoryLanguage.belongsTo(Language, { foreignKey: 'language_id' });

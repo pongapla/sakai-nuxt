@@ -21,6 +21,19 @@ export const  useCategoriesStore =  defineStore("category", () => {
         }
     };
 
+    const createCategoryLanguage = async (category: FormData) => {
+        try {
+            
+            const result = await api.createCategory(category);
+            return result;
+            
+        } catch (error) {
+            
+            console.error('Error creating team:', error);
+            return error;
+        }
+    };
+
     const getCategories = async (start: string,limit: string) => {
         try {
            
@@ -50,10 +63,11 @@ export const  useCategoriesStore =  defineStore("category", () => {
         }
     }
 
-    const deleteCategory = async (id: string) => {
+    const deleteCategory = async (data: any) => {
 
         try {
-            const result = await api.deleteCategory(id);
+            
+            const result = await api.deleteCategory(data);
             return result;
         } catch (error) {
             return error;
@@ -67,6 +81,7 @@ export const  useCategoriesStore =  defineStore("category", () => {
 
         fetchingStatus,
         createCategory,
+        createCategoryLanguage,
         getCategories,
         updateCategory,
         deleteCategory
