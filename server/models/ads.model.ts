@@ -1,6 +1,11 @@
 import { DataTypes } from 'sequelize';
 import dbInstance from '../db_instance';
 
+// เริ่มต้นประกาศ AdsLanguage ก่อน
+import AdsLanguage from './ads_language.model';
+import Language from './language.model';
+
+// สร้างโมเดล Ads
 const Ads = dbInstance.define('Ads', {
     id: {
         type: DataTypes.INTEGER,
@@ -50,9 +55,15 @@ const Ads = dbInstance.define('Ads', {
     }
 });
 
+Ads.hasMany(AdsLanguage, { foreignKey: 'ads_id', as: 'adsLanguages', onDelete: 'CASCADE' });
+AdsLanguage.belongsTo(Ads, { foreignKey: 'ads_id', as: 'ads'});
+
+AdsLanguage.belongsTo(Language, { foreignKey: 'language_id', as: 'language' });
+Language.hasMany(AdsLanguage, { foreignKey: 'language_id' });
+
 (async () => {
     try {
-        await dbInstance.authenticate();
+       
         console.log('Connection to DB_Ads has been established successfully.');
 
         await Ads.sync({ force: false });
@@ -60,7 +71,7 @@ const Ads = dbInstance.define('Ads', {
     } catch (error) {
         console.error('Unable to connect to the database or create table:', error);
     } finally {
-        //await dbInstance.close();
+        // await dbInstance.close();
     }
 })();
 

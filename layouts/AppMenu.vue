@@ -17,7 +17,7 @@ const model = ref([
         items: [{ label: 'News', icon: 'pi pi-fw pi-file', to: '/news' }]
     },
     {
-        items: [{ label: 'Ads', icon: 'pi pi-fw pi-amazon', to: '/' }]
+        items: [{ label: 'Ads', icon: 'pi pi-fw pi-amazon', to: '/ads' }]
     },
     {
         items: [{ label: 'Categories', icon: 'pi pi-fw pi-align-justify', to: '/categories' }]

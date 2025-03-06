@@ -1,7 +1,7 @@
 import Category from '@/server/models/category.model';
 import CategoryLanguage from '@/server/models/category_language.model';
 import Language from '@/server/models/language.model';
-import { defineEventHandler, readMultipartFormData, createError } from 'h3';
+import { defineEventHandler } from 'h3';
 
 export default defineEventHandler(async (event) => {
 

@@ -5,48 +5,48 @@ import { server } from '../../utils/constants';
 
 const { fetch } = useFetcher();
 
-export const getCategories = async (start: string, limit: string) => {
+export const getAds = async (start: string, limit: string) => {
     try {
         
-        const result = await fetch(`${server.CATEGORY_URL}?start=${start}&limit=${limit}`);
+        const result = await fetch(`${server.ADS_URL}?start=${start}&limit=${limit}`);
         return result;
 
     } catch (error) {
 
-        console.error('Error creating user:', error);
+        console.error('Error creating ads:', error);
         throw error;
 
     }
 
 };
 
-export const getCategoryById = async (id: any) => {
+export const getAdsById = async (id: any) => {
 
     try {
 
-        const result = await fetch(`${server.USER_URL}/${id}`);
+        const result = await fetch(`${server.ADS_URL}/${id}`);
         return result;
 
     } catch (error) {
 
-        console.error('Error creating user:', error);
+        console.error('Error creating ads:', error);
         throw error;
 
     }
 };
 
-export const createCategory = async (category: FormData) => {
+export const createAds = async (ads: FormData) => {
 
     try {
-        const result = await fetch('category/category', {
+        const result = await fetch('ads/ads', {
             method: 'POST',
-            body: category,
+            body: ads,
         });
 
         return result
 
     } catch (error: any) {
-        console.error('Error creating categories:', error);
+        console.error('Error creating ads:', error);
         throw error;
     }
 };
@@ -54,14 +54,14 @@ export const createCategory = async (category: FormData) => {
 
 
 
-export const updateCategory = async (category: FormData) => {
+export const updateAds = async (ads: FormData) => {
 
     try {
 
-        const result = await fetch(`${server.CATEGORY_URL}/1`, {
+        const result = await fetch(`${server.ADS_URL}/1`, {
 
             method: 'PUT',
-            body: category
+            body: ads
 
         });
 
@@ -69,13 +69,13 @@ export const updateCategory = async (category: FormData) => {
         
     } catch (error) {
 
-        console.error('Error creating user:', error);
+        console.error('Error creating ads:', error);
         throw error;
 
     }
 };
 
-export const deleteCategory = async (data: any) => {
+export const deleteAds = async (data: any) => {
 
     try {
         
@@ -100,7 +100,7 @@ export const deleteCategory = async (data: any) => {
 
     } catch (error) {
 
-        console.error('Error creating user:', error);
+        console.error('Error creating ads:', error);
         throw error;
 
     }

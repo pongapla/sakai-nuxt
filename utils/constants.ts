@@ -13,5 +13,6 @@ export const server = {
     TOKEN_KEY: `token`,
     USERNAME: `userName`,
     CATEGORY_URL: `category`,
-    LANGUAGE_URL: `language`
+    LANGUAGE_URL: `language`,
+    ADS_URL: `ads`
 };

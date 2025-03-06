@@ -3,7 +3,6 @@ import Category from '@/server/models/category.model';
 import CategoryLanguage  from '@/server/models/category_language.model';
 import Language from '@/server/models/language.model';
 import { defineEventHandler, createError, readBody } from 'h3';
-import { Transaction } from 'sequelize';
 
 
 export default defineEventHandler(async (event) => {

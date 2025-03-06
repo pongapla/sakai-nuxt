@@ -45,7 +45,7 @@ const CategoryLanguage = dbInstance.define('Category_Languages', {
 
 (async () => {
     try {
-        //await dbInstance.authenticate();
+       
         console.log('Connection DB_Category_Language has been established successfully.');
 
         await CategoryLanguage.sync({ force: false });

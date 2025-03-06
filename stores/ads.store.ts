@@ -1,43 +1,43 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import { useApiCategory } from './../composables/useApiCategory';
+import { useApiAds } from './../composables/useApiAds';
 import { FetchingStatus } from '../types/enums/FetchingStatus';
 
-export const  useCategoriesStore =  defineStore("category", () => {
+export const  useAdsStore =  defineStore("ads", () => {
 
     const fetchingStatus = ref<FetchingStatus>(FetchingStatus.init);
-    const api = useApiCategory();
+    const api = useApiAds();
 
-    const createCategory = async (category: FormData) => {
+    const createAds = async (ads: FormData) => {
         try {
             
-            const result = await api.createCategory(category);
+            const result = await api.createAds(ads);
             return result;
             
         } catch (error) {
             
-            console.error('Error creating team:', error);
+            console.error('Error creating ads:', error);
             return error;
         }
     };
 
-    const createCategoryLanguage = async (category: FormData) => {
+    const createAdsLanguage = async (ads: FormData) => {
         try {
             
-            const result = await api.createCategory(category);
+            const result = await api.createAds(ads);
             return result;
             
         } catch (error) {
             
-            console.error('Error creating team:', error);
+            console.error('Error creating ads:', error);
             return error;
         }
     };
 
-    const getCategories = async (start: string,limit: string) => {
+    const getAds = async (start: string,limit: string) => {
         try {
            
-            const result = await api.getCategories(start,limit);
+            const result = await api.getAds(start,limit);
             return result;
 
         } catch (error) {
@@ -49,11 +49,11 @@ export const  useCategoriesStore =  defineStore("category", () => {
         }
     };
 
-    const updateCategoryLanguage = async (category: FormData) => {
+    const updateAdsLanguage = async (ads: FormData) => {
         
         try {
 
-            const result = await api.updateCategory(category);
+            const result = await api.updateAds(ads);
             return result;
 
         } catch (error) {
@@ -63,11 +63,11 @@ export const  useCategoriesStore =  defineStore("category", () => {
         }
     }
 
-    const deleteCategory = async (data: any) => {
+    const deleteAds = async (data: any) => {
 
         try {
             
-            const result = await api.deleteCategory(data);
+            const result = await api.deleteAds(data);
             return result;
         } catch (error) {
             return error;
@@ -80,11 +80,11 @@ export const  useCategoriesStore =  defineStore("category", () => {
     return {
 
         fetchingStatus,
-        createCategory,
-        createCategoryLanguage,
-        getCategories,
-        updateCategoryLanguage,
-        deleteCategory
+        createAds,
+        createAdsLanguage,
+        getAds,
+        updateAdsLanguage,
+        deleteAds
     };
 
 });
