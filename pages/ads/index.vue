@@ -574,7 +574,7 @@ onMounted(async () => {
                 ads.currentLang = 'TH';
             });
             totalRecords.value = data.totalCount;
-
+            
             const dataLanguage = await languagesStore.getLanguages();
             languages.value = dataLanguage.data;
         } catch (error) {

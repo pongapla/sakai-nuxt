@@ -81,7 +81,12 @@ export const deleteAds = async (data: any) => {
         
         const ads_id = data.value.id || '';
         const lang = data.value.currentLang || '';
-        const picture = data.value.adsLanguages.cover_picture || '';
+        const filteredAds = data.value.adsLanguages.filter(ad => ad.language.lang_flag === data.value.currentLang);
+        const findPicture = filteredAds.map(ad => ({
+        cover_picture: ad.cover_picture
+        }));
+       
+        const picture = findPicture.length > 0 ? findPicture[0].cover_picture : '';
         const newKey = data.value.newKey || '';
         const result = await fetch(`${server.ADS_URL}/1`, {
 

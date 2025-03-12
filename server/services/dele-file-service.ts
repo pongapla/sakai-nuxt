@@ -13,7 +13,7 @@ export const deleteFile = async (fileName: string, modelName: string) => {
     if (!fileName) {
         throw createError({ statusCode: 400, message: 'No file name provided' });
     }
-    console.log('>>>>>>');
+    
     let filePath = '';
     let urlPath = '';
     // สร้างเส้นทางไฟล์ตามชื่อโมเดล
@@ -23,10 +23,10 @@ export const deleteFile = async (fileName: string, modelName: string) => {
     } else if (modelName === 'User') {
         urlPath = '/public/images/users';
         filePath = path.resolve(path.resolve() + urlPath) + '/' + fileName;
-    } else if (modelName === 'Ads') {console.log('>>>>>');
+    } else if (modelName === 'Ads') {
         urlPath = '/public/images/ads';
         filePath = path.resolve(path.resolve() + urlPath) + '/' + fileName;
-        console.log(filePath);
+        
     } else {
         throw createError({ statusCode: 400, message: 'Unknown model name' });
     }
