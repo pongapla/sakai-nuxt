@@ -64,7 +64,7 @@ export const updateAds = async (ads: FormData) => {
             body: ads
 
         });
-
+        
         return result;
         
     } catch (error) {
@@ -79,19 +79,21 @@ export const deleteAds = async (data: any) => {
 
     try {
         
-        const group = data.value.group || '';
+        const ads_id = data.value.id || '';
         const lang = data.value.currentLang || '';
+        const picture = data.value.adsLanguages.cover_picture || '';
         const newKey = data.value.newKey || '';
-        const result = await fetch(`${server.CATEGORY_URL}/1`, {
+        const result = await fetch(`${server.ADS_URL}/1`, {
 
             method: 'DELETE',
             headers: {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                group: group,
+                adsID: ads_id,
                 lang: lang,
-                newKey: newKey
+                newKey: newKey,
+                picture: picture
             })
             
         });

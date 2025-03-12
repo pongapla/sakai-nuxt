@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
   try {
    
     var c_id;
-    var status;
+    let status;
     const body = await readBody(event)
     
     if (!body) throw createError({ statusCode: 400, message: 'Invalid data' });

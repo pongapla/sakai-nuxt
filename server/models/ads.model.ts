@@ -18,19 +18,23 @@ const Ads = dbInstance.define('Ads', {
     },
     is_popup: {
         type: DataTypes.BOOLEAN,
-        allowNull: true
+        allowNull: false,
+        defaultValue: false
     },
     is_slide: {
         type: DataTypes.BOOLEAN,
-        allowNull: true
+        allowNull: false,
+        defaultValue: false
     },
     is_news_content: {
         type: DataTypes.BOOLEAN,
-        allowNull: true
+        allowNull: false,
+        defaultValue: false
     },
     is_list: {
         type: DataTypes.BOOLEAN,
-        allowNull: true
+        allowNull: false,
+        defaultValue: false
     },
     status: {
         type: DataTypes.STRING,

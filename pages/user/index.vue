@@ -234,7 +234,7 @@ const initialFormData = {
     gender: ''
 };
 
-const errorMessages = reactive({
+let errorMessages = reactive({
   name: '',
   userName: '',
   email: '',
@@ -489,8 +489,7 @@ const validateForm = () => {
     if (!formData.is_shop && !formData.is_registrant) {
     errorMessages.userType = 'At least one of UserType (registrant or shop) is required.';
     isValid = false;
-    
-}
+    }
     return isValid;
 }
 

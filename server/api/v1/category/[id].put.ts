@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
 
     try {
         
-        var ID: number = 0;
+        let ID: number = 0;
         const formData = await readMultipartFormData(event);
         const bodyRow = formData?.find(item => item.name === 'body');
         if (!bodyRow) throw createError({ statusCode: 400, message: 'Body is required' });

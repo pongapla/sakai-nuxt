@@ -101,6 +101,11 @@
                             <template #header>
                                 <span class="flex-1 text-center">Active</span>
                             </template>
+                            <template #body="slotProps">
+                                <div class="flex justify-content-center">
+                                    <Button icon="pi pi-trash" outlined rounded severity="danger" @click="confirmDeleteAds(modifyData(slotProps.data))" />
+                                </div>
+                            </template>
                         </Column>
                     </DataTable>
                 </div>
@@ -111,34 +116,106 @@
     <!-- Dialog for Add/Edit Ads -->
     <div class="grid">
         <div class="col-12 lg:col-6">
-            <Dialog :header="dialogHeader" v-model:visible="display" :breakpoints="{ '960px': '70vw' }" :style="{ width: '30vw', height: '80vh' }" :modal="true" @hide="closeDialog">
+            <Dialog :header="dialogHeader" v-model:visible="display" :breakpoints="{ '960px': '70vw' }" :style="{ width: '32vw', height: 'auto' }" :modal="true" @hide="closeDialog">
                 <hr />
                 <div style="margin-left: 15px">Show in</div>
-                <div style="margin-left: 20px; margin-top: 20px;">
-                  <div class="flex-flow flex-col gap-12">
-                        
-                        <div v-for="show of showAds" :key="show.key" class="flex flex-col items-start gap-2">
-                            <Checkbox v-model="selectedAds" :inputId="show.key" name="category" :value="show.name" />
+                <div v-if="isAddLanguage" style="margin-left: 20px; margin-top: 20px">
+                    <div class="flex-flow flex-col gap-12">
+                        <div v-for="show of showAds" :key="show.key" class="flex flex-col items-start gap-2 mb-3">
+                            <input class="custom-checkbox" type="checkbox" v-model="formData[show.key]" :inputId="show.key" name="show" :value="show.key" />
+
                             <label :for="show.key">{{ show.name }}</label>
+                        </div>
+
+                        <small v-if="errorMessages.showError" class="p-error">{{ errorMessages.showError }}</small>
+                    </div>
+                </div>
+                <div style="margin-left: 20px">
+                    <div class="grid align-items-center mt-2" style="display: flex; align-items: center">
+                        <h6 style="margin-right: 0px; padding-top: 20px">Title :</h6>
+                        <div class="col mb-3">
+                            <InputText type="text" placeholder="Title" v-model="formData.adsLanguages.title" style="width: 100%" />
+                            <small v-if="errorMessages.adsLanguages.title" class="p-error">{{ errorMessages.adsLanguages.title }}</small>
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-left: 20px">
+                    <div class="grid align-items-center" style="display: flex; align-items: center">
+                        <h6 style="margin-right: 0px; padding-top: 20px">Detail :</h6>
+                        <div class="col">
+                            <Textarea v-model="formData.adsLanguages.detail" placeholder="Detail" rows="1" cols="20" style="width: 100%" />
+                            <small v-if="errorMessages.adsLanguages.detail" class="p-error">{{ errorMessages.adsLanguages.title }}</small>
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-left: 20px">
+                    <div class="grid align-items-center" style="display: flex; align-items: center">
+                        <h6 style="margin-right: 0px; padding-top: 20px">Language :</h6>
+                        <div class="col">
+                            <div class="col">
+                                <Dropdown :options="languages" v-model="formData.adsLanguages.language.lang_flag" optionLabel="lang_name" placeholder="Select an language" optionValue="lang_flag" style="width: 100%" />
+                            </div>
+                            <small v-if="errorMessages.adsLanguages.language.lang_flag" class="p-error">{{ errorMessages.adsLanguages.language.lang_flag }}</small>
+                        </div>
+                    </div>
+                </div>
+                <div v-if="isAddLanguage" style="margin-left: 20px">
+                    <div class="grid align-items-center" style="display: flex; align-items: center">
+                        <h6 style="margin-right: 0px; padding-top: 20px">Start Date :</h6>
+                        <div class="col mb-3">
+                            <Calendar v-model="formData.start_date" showIcon iconDisplay="input" dateFormat="dd/mm/yy" style="width: 100%" />
+                            <small v-if="errorMessages.start_date" class="p-error">{{ errorMessages.start_date }}</small>
+                        </div>
+                    </div>
+                </div>
+                <div v-if="isAddLanguage" style="margin-left: 20px">
+                    <div class="grid align-items-center" style="display: flex; align-items: center">
+                        <h6 style="margin-right: 0px; padding-top: 20px">Stop Date :</h6>
+                        <div class="col">
+                            <Calendar v-model="formData.stop_date" showIcon iconDisplay="input" dateFormat="dd/mm/yy" style="width: 100%" />
+                            <small v-if="errorMessages.stop_date" class="p-error">{{ errorMessages.stop_date }}</small>
                         </div>
                     </div>
                 </div>
                 <div style="margin-left: 20px">
                     <div class="grid align-items-center mt-2" style="display: flex; align-items: center">
-                        <h5 style="margin-right: 0px; padding-top: 20px">Title :</h5>
+                        <h6 style="margin-right: 0px; padding-top: 20px">URL :</h6>
                         <div class="col mb-3">
-                            <InputText type="text" placeholder="Title" v-model="formData.title" class="custom-input" />
-                            <small v-if="errorMessages.title" class="p-error">{{ errorMessages.title }}</small>
+                            <InputText type="text" placeholder="url" v-model="formData.adsLanguages.url" style="width: 100%" />
+                            <small v-if="errorMessages.adsLanguages.url" class="p-error">{{ errorMessages.adsLanguages.url }}</small>
                         </div>
                     </div>
+                </div>
+                <div style="margin-left: 20px">
+                    <div class="grid align-items-center" style="display: flex; align-items: center">
+                        <h6 style="margin-right: 0px; padding-top: 20px">Picture :</h6>
+                        <div class="col-12 mb-2 lg:col-8 lg:mb-0">
+                            <FileUpload ref="fileupload" mode="basic" name="cover_picture" accept="image/*" :maxFileSize="1000000" @select="onUpload" />
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-3" style="text-align: right">
+                    <Button label="Cancel" @click="closeDialog" icon="pi pi-times" class="p-button-outlined" :style="{ color: 'red', borderColor: 'red', marginRight: '10px' }" />
+                    <Button label="Save" @click="save" icon="pi pi-check" class="p-button-outlined" />
                 </div>
             </Dialog>
         </div>
     </div>
+
+    <Dialog v-model:visible="deleteAdsLanguageDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
+        <div class="flex items-center gap-4">
+            <i class="pi pi-exclamation-triangle !text-3xl" />
+            <span>Are you sure you want to delete the selected ads language?</span>
+        </div>
+        <template #footer>
+            <Button label="No" icon="pi pi-times" style="color: red" text @click="deleteAdsLanguageDialog = false" />
+            <Button label="Yes" icon="pi pi-check" text @click="deleteSelectedAds" />
+        </template>
+    </Dialog>
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, onMounted, computed } from 'vue';
+import { reactive, ref, onMounted, computed, watch } from 'vue';
 import { Language } from '../../types/types/language';
 import { Ads } from '../../types/types/ads';
 import { useAdsStore } from '../../stores/ads.store';
@@ -146,6 +223,8 @@ import { useApiLanguages } from '../../stores/languagus.store';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import InputText from 'primevue/inputtext';
+import Textarea from 'primevue/textarea';
+import Calendar from 'primevue/calendar';
 import { useCustomToast } from '../../composables/useToast';
 
 const display = ref(false);
@@ -153,23 +232,24 @@ const isEditMode = ref(false);
 const loading2 = ref(false);
 const adsSearchQuery = ref('');
 const adsInfo = ref<Ads[]>([]);
-const selectedLangauge = ref();
+const files = ref<File[]>([]);
 const languages = ref<Language[]>([]);
-const selectedAds = ref();
 const deleteAdsLanguageDialog = ref(false);
 const adsStore = useAdsStore();
 const languagesStore = useApiLanguages();
+const selectedAds = ref();
 const first = ref(0);
 const rows = ref(10);
 const totalRecords = ref(0);
 const { showSuccess, showError } = useCustomToast();
 const dialogHeader = ref('New Ads');
+const isAddLanguage = ref(true);
 
 const showAds = ref([
     { name: 'Show in news category list 1200 x 800', key: 'is_list' },
     { name: 'Show on news content page 1200 x 800', key: 'is_news_content' },
     { name: 'Show as popup 1200 x 800', key: 'is_popup' },
-    { name: 'Show the footer of the news category 600 x 150', key: 'R' }
+    { name: 'Show the footer of the news category 600 x 150', key: 'is_slide' }
 ]);
 
 const onPage = (event: any) => {
@@ -203,46 +283,90 @@ const open = () => {
 
 const openAdsLanguage = (data: any) => {
     dialogHeader.value = 'New Ads Language';
-    formData.group = data.group;
+    isAddLanguage.value = false;
+    formData.id = data.id;
     open();
 };
 
 const closeDialog = () => {
     display.value = false;
     isEditMode.value = false;
-    selectedLangauge.value = null;
+    isAddLanguage.value = true;
     resetForm();
     resetError();
 };
 
 const formData = reactive({
-    group: '',
-    title: '',
-    lang_id: null as number | null
+    id: '',
+    start_date: null,
+    stop_date: null,
+    is_popup: false,
+    is_slide: false,
+    is_news_content: false,
+    is_list: false,
+    adsLanguages: {
+        title: '',
+        detail: '',
+        cover_picture: '',
+        url: '',
+        language: {
+            lang_flag: ''
+        }
+    }
 });
 
-const initialFormData = {
-    group: '',
-    title: '',
-    lang_id: null as number | null
-};
-
-const errorMessages = reactive({
-    title: '',
-    lang_id: null as number | null
+let errorMessages = reactive({
+    showError: '',
+    start_date: '',
+    stop_date: '',
+    is_popup: false,
+    is_slide: false,
+    is_news_content: false,
+    is_list: false,
+    adsLanguages: {
+        title: '',
+        detail: '',
+        cover_picture: '',
+        url: '',
+        language: {
+            lang_flag: ''
+        }
+    }
 });
-
-const initialErroMessages = {
-    title: '',
-    lang_id: null as number | null
-};
 
 const resetForm = () => {
-    Object.assign(formData, initialFormData);
+    //Object.assign(formData, initialFormData);
+    formData.id = '';
+    formData.is_list = false;
+    formData.is_news_content = false;
+    formData.is_popup = false;
+    formData.is_slide = false;
+    formData.start_date = null;
+    formData.stop_date = null;
+    formData.adsLanguages.detail = '';
+    formData.adsLanguages.title = '';
+    formData.adsLanguages.url = '';
+    formData.adsLanguages.cover_picture = '';
+    formData.adsLanguages.language.lang_flag = '';
 };
 
 const resetError = () => {
-    Object.assign(errorMessages, initialErroMessages);
+    (errorMessages.showError = ''),
+        (errorMessages.start_date = ''),
+        (errorMessages.stop_date = ''),
+        (errorMessages.is_popup = false),
+        (errorMessages.is_slide = false),
+        (errorMessages.is_news_content = false),
+        (errorMessages.is_list = false),
+        (errorMessages.adsLanguages = {
+            title: '',
+            detail: '',
+            cover_picture: '',
+            url: '',
+            language: {
+                lang_flag: ''
+            }
+        });
 };
 
 const save = () => {
@@ -251,13 +375,20 @@ const save = () => {
         return;
     }
 
-    formData.lang_id = selectedLangauge.value;
+    //formData.lang_id = selectedLangauge.value;
 
     const formDataObject = new FormData();
 
+    if (files.value && files.value.length > 0) {
+        formDataObject.append('file', files.value[0]);
+        formData.adsLanguages.cover_picture = files.value[0].name;
+    } else {
+        formData.adsLanguages.cover_picture = '';
+    }
+
     formDataObject.append('body', JSON.stringify(formData));
 
-    if (formData.group) {
+    if (formData.id) {
         isEditMode.value ? updateAds(formDataObject) : addAdsLanguage(formDataObject);
     } else {
         addAds(formDataObject);
@@ -271,6 +402,7 @@ const addAds = async (formDataObject: FormData) => {
         const result = await adsStore.createAds(formDataObject);
         const newAds = result.data;
         newAds.currentLang = 'TH';
+
         adsInfo.value.push(newAds);
 
         showSuccess('Ads added successfully!');
@@ -293,7 +425,7 @@ const addAdsLanguage = async (formDataObject: FormData) => {
         const newAdsLanguage = result.data;
         newAdsLanguage.currentLang = 'TH';
 
-        const index = adsInfo.value.findIndex((item) => item.title === newAdsLanguage.title);
+        const index = adsInfo.value.findIndex((item) => item.id === newAdsLanguage.id);
 
         if (index !== -1) {
             adsInfo.value[index] = newAdsLanguage;
@@ -319,14 +451,23 @@ const updateAds = async (formDataObject: FormData) => {
         }
 
         const newUpdate = result.data;
-        newUpdate.currentLang = 'TH';
+        
+        const hasTHLanguage = newUpdate.adsLanguages.some((lang: any) => lang.language.lang_flag === 'TH');
 
-        const index = adsInfo.value.findIndex((item) => item.title === newUpdate.title);
+        if (!hasTHLanguage) {
+            
+            if (newUpdate.adsLanguages.length > 0) {
+                newUpdate.currentLang = newUpdate.adsLanguages[0].language.lang_flag;
+            } 
+        } else {
+           
+            newUpdate.currentLang = 'TH';
+        }
+
+        const index = adsInfo.value.findIndex((item) => item.id === newUpdate.id);
 
         if (index !== -1) {
             adsInfo.value[index] = newUpdate;
-        } else {
-            adsInfo.value.push(newUpdate);
         }
 
         showSuccess('Ads-language update successfully!');
@@ -336,13 +477,26 @@ const updateAds = async (formDataObject: FormData) => {
 };
 
 const editAds = (data: any) => {
-    const lang_index = data.languageList.indexOf(data.currentLang);
-    const title_index = data.languageTitles[lang_index];
-    data.title = title_index;
+    isEditMode.value = true;
+    const selectedLanguage = data.adsLanguages.find((lang: any) => lang.language.lang_flag === data.currentLang);
     const lang = languages.value.find((lang) => lang.lang_flag === data.currentLang);
-    selectedLangauge.value = lang?.id;
-    formData.title = data.title;
-    formData.group = data.group;
+    formData.adsLanguages.language.lang_flag = lang?.lang_flag || '';
+
+    formData.id = data.id;
+    formData.is_list = data.is_list || false;
+    formData.is_news_content = data.is_news_content || false;
+    formData.is_popup = data.is_popup || false;
+    formData.is_slide = data.is_slide || false;
+    formData.start_date = data.start_date;
+    formData.stop_date = data.stop_date;
+
+    if (selectedLanguage) {
+        formData.adsLanguages.title = selectedLanguage.title;
+        formData.adsLanguages.detail = selectedLanguage.detail;
+        formData.adsLanguages.cover_picture = selectedLanguage.cover_picture;
+        formData.adsLanguages.url = selectedLanguage.url;
+    }
+
     dialogHeader.value = 'Edit Ads Language';
     isEditMode.value = true;
     open();
@@ -362,12 +516,12 @@ const deleteSelectedAds = async () => {
     if (!selectedAds) return;
 
     try {
-        const flag = selectedAds.value.currentLang;
-        const titleSeach = selectedAds.value.title;
-        const index = adsInfo.value.findIndex((item) => item.title === selectedAds.value.title);
+        const flag = selectedAds;
+        const titleSeach = selectedAds.value;
+        const index = adsInfo.value.findIndex((item) => item.id === selectedAds.value.id);
         const result = await adsStore.deleteAds(selectedAds);
-
-        if (result.status == 'del-ads') {
+        
+        if (result.status == 'del-ads' || result.status == 'del-ads-lang') {
             if (index !== -1) {
                 adsInfo.value.splice(index, 1);
             }
@@ -375,12 +529,20 @@ const deleteSelectedAds = async () => {
 
         if (result.status == 'del-lang') {
             if (index !== -1) {
-                adsInfo.value[index].languageList = adsInfo.value[index].languageList.filter((lang) => lang !== flag);
-                adsInfo.value[index].languageTitles = adsInfo.value[index].languageTitles.filter((title) => title !== titleSeach);
+                adsInfo.value[index].adsLanguages = adsInfo.value[index].adsLanguages.filter((lang: any) => lang.language.lang_flag !== flag.value.currentLang);
 
+                if (adsInfo.value[index].adsLanguages.length > 0) {
+                    flag.value.currentLang = adsInfo.value[index].adsLanguages[0].language.lang_flag;
+                }
                 adsInfo[index] = {
                     ...adsInfo[index]
                 };
+            }
+        }
+
+        if (result.status == 'del-ads-lang') {
+            if (index !== -1) {
+                adsInfo.value.splice(index, 1);
             }
         }
     } catch (error) {
@@ -415,7 +577,6 @@ onMounted(async () => {
 
             const dataLanguage = await languagesStore.getLanguages();
             languages.value = dataLanguage.data;
-            console.log(adsInfo.value);
         } catch (error) {
             showError(error.message);
         } finally {
@@ -426,8 +587,100 @@ onMounted(async () => {
 
 const validateForm = () => {
     let isValid = true;
+
+    if (isAddLanguage.value) {
+        // Check if at least one option is selected
+        if (!formData.is_list && !formData.is_news_content && !formData.is_popup && !formData.is_slide) {
+            errorMessages.showError = 'Please select at least one option.';
+            isValid = false;
+        }
+
+        // Check if start date is selected
+        if (!formData.start_date) {
+            errorMessages.start_date = 'Please select a start date.';
+            isValid = false;
+        }
+
+        // Check if stop date is selected
+        if (!formData.stop_date) {
+            errorMessages.stop_date = 'Please select a stop date.'; // Fix the error message key for stop_date
+            isValid = false;
+        }
+
+        // Check if title is provided
+        if (!formData.adsLanguages.title) {
+            errorMessages.adsLanguages.title = 'Please enter a title.';
+            isValid = false;
+        }
+
+        // Check if language is selected
+        if (!formData.adsLanguages.language.lang_flag) {
+            errorMessages.adsLanguages.language.lang_flag = 'Please select a language.'; // Corrected the error message key
+            isValid = false;
+        }
+    } else {
+        if (!formData.adsLanguages.title) {
+            errorMessages.adsLanguages.title = 'Please enter a title.';
+            isValid = false;
+        }
+
+        if (!formData.adsLanguages.language.lang_flag) {
+            errorMessages.adsLanguages.language.lang_flag = 'Please select a language.';
+            isValid = false;
+        }
+    }
+
     return isValid;
 };
+
+watch(
+    () => ({
+        is_list: formData.is_list,
+        is_news_content: formData.is_news_content,
+        is_popup: formData.is_popup,
+        is_slide: formData.is_slide,
+        start_date: formData.start_date,
+        stop_date: formData.stop_date,
+        lang_flag: formData.adsLanguages.language.lang_flag,
+        title: formData.adsLanguages.title
+    }),
+    (newValues, oldValues) => {
+        const { is_list, is_news_content, is_popup, is_slide, start_date, stop_date, lang_flag, title } = newValues;
+
+        // ตรวจสอบว่าอย่างน้อย 1 ตัวเลือกถูกเลือกหรือไม่
+        if (!is_list && !is_news_content && !is_popup && !is_slide) {
+            errorMessages.showError = 'Please select at least one option.';
+        } else {
+            errorMessages.showError = '';
+        }
+
+        // เพิ่มเงื่อนไขสำหรับ start_date และ stop_date
+        if (!start_date) {
+            errorMessages.start_date = 'Please select a start date.';
+        } else {
+            errorMessages.start_date = '';
+        }
+
+        if (!stop_date) {
+            errorMessages.stop_date = 'Please select a stop date.';
+        } else {
+            errorMessages.stop_date = '';
+        }
+
+        // เพิ่มเงื่อนไขสำหรับ title และ language flag
+        if (!title) {
+            errorMessages.adsLanguages.title = 'Please enter a title.';
+        } else {
+            errorMessages.adsLanguages.title = '';
+        }
+
+        if (!lang_flag) {
+            errorMessages.adsLanguages.language.lang_flag = 'Please select a language.';
+        } else {
+            errorMessages.adsLanguages.language.lang_flag = '';
+        }
+    }
+);
 
 const changeLanguage = (rowData: any, lang: any) => {
     rowData.currentLang = lang;
@@ -459,13 +712,13 @@ const getCoverPicture = (rowData: any) => {
 
     const langObject = rowData.adsLanguages.find((lang: any) => lang.language.lang_flag === rowData.currentLang);
 
-    if (langObject && langObject.cover_picture) {
-        return `/images/ads/${langObject.cover_picture}`;
+    if (langObject && langObject?.cover_picture) {
+      return `/images/ads/${langObject.cover_picture}?${new Date().getTime()}`;
     }
 
     const fallbackLangObject = rowData.adsLanguages[0];
-    if (fallbackLangObject && fallbackLangObject.cover_picture) {
-        return `/images/ads/${fallbackLangObject.cover_picture}`;
+    if (fallbackLangObject && fallbackLangObject?.cover_picture) {
+      return `/images/ads/${fallbackLangObject.cover_picture}?${new Date().getTime()}`;
     }
 
     return '/images/ads/no-image-icon.png';
@@ -488,6 +741,10 @@ const getDetail = (rowData: any) => {
     }
 
     return '';
+};
+
+const onUpload = (event: any) => {
+    files.value = event.files;
 };
 </script>
 
@@ -583,5 +840,13 @@ const getDetail = (rowData: any) => {
 
 .p-dropdown:not(.p-disabled).p-focus {
     outline: none !important;
+}
+
+.custom-checkbox {
+    width: 20px;
+    height: 20px;
+    transform: scale(1);
+    cursor: pointer;
+    border-color: gray;
 }
 </style>
