@@ -3,7 +3,7 @@
 
         <div class="col-12">
             <div class="card">
-                <h5>ข่าวไก่ชน</h5>
+                <h5>ข่าว</h5>
                 
             </div>
         </div>

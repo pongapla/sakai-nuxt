@@ -39,8 +39,7 @@ export default defineEventHandler(async (event) => {
                 },
                 transaction: t
             });
-            await t.commit();
-            console.log('dele asd ok');console.log(body);
+            
             status = 'del-ads';
         } else {
             const lang = await Language.findOne({
