@@ -177,7 +177,7 @@ const loadPageData = async () => {
             categoryInfo.value.forEach((category: any) => {
                 category.currentLang = 'TH';
             });
-        } catch (error) {
+        } catch (error: any) {
             showError(error.message);
         } finally {
             loading2.value = false;
@@ -280,7 +280,7 @@ const addCategory = async (formDataObject: FormData) => {
         categoryInfo.value.push(newCategory);
 
         showSuccess('Category added successfully!');
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error while adding category: ', error.message);
         showError(error.message);
     } finally {
@@ -308,7 +308,7 @@ const addCategoryLanguage = async (formDataObject: FormData) => {
         }
 
         showSuccess('Category-language added successfully!');
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error while adding category-language: ', error.message);
         showError(error.message);
     } finally {
@@ -336,7 +336,7 @@ const updateCategory = async (formDataObject: FormData) => {
         }
 
         showSuccess('Category-language update successfully!');
-    } catch (error) {
+    } catch (error: any) {
         showError(error.message);
     }
 };
@@ -383,13 +383,12 @@ const deleteSelectedCategory = async () => {
             if (index !== -1) {
                 categoryInfo.value[index].languageList = categoryInfo.value[index].languageList.filter((lang) => lang !== flag);
                 categoryInfo.value[index].languageTitles = categoryInfo.value[index].languageTitles.filter((title) => title !== titleSeach);
-
-                categoryInfo[index] = {
-                    ...categoryInfo[index]
+                categoryInfo.value[index] = {
+                    ...categoryInfo.value[index]
                 };
             }
         }
-    } catch (error) {
+    } catch (error: any) {
         showError(error.message);
     } finally {
         deleteCategoryLanguageDialog.value = false;
@@ -419,7 +418,7 @@ onMounted(async () => {
             //Get Language
             const dataLanguage = await languagesStore.getLanguages();
             languages.value = dataLanguage.data;
-        } catch (error) {
+        } catch (error: any) {
             showError(error.message);
         } finally {
             loading2.value = false;

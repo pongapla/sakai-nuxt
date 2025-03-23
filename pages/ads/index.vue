@@ -269,7 +269,7 @@ const loadPageData = async () => {
             adsInfo.value.forEach((ads: any) => {
                 ads.currentLang = 'TH';
             });
-        } catch (error) {
+        } catch (error: any) {
             showError(error.message);
         } finally {
             loading2.value = false;
@@ -406,7 +406,7 @@ const addAds = async (formDataObject: FormData) => {
         adsInfo.value.push(newAds);
 
         showSuccess('Ads added successfully!');
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error while adding Ads: ', error.message);
         showError(error.message);
     } finally {
@@ -434,7 +434,7 @@ const addAdsLanguage = async (formDataObject: FormData) => {
         }
 
         showSuccess('Ads-language added successfully!');
-    } catch (error) {
+    } catch (error: any ) {
         console.error('Error while adding ads-language: ', error.message);
         showError(error.message);
     } finally {
@@ -471,7 +471,7 @@ const updateAds = async (formDataObject: FormData) => {
         }
 
         showSuccess('Ads-language update successfully!');
-    } catch (error) {
+    } catch (error: any) {
         showError(error.message);
     }
 };
@@ -534,9 +534,7 @@ const deleteSelectedAds = async () => {
                 if (adsInfo.value[index].adsLanguages.length > 0) {
                     flag.value.currentLang = adsInfo.value[index].adsLanguages[0].language.lang_flag;
                 }
-                adsInfo[index] = {
-                    ...adsInfo[index]
-                };
+                adsInfo.value[index] = { ...adsInfo.value[index] };
             }
         }
 
@@ -545,7 +543,7 @@ const deleteSelectedAds = async () => {
                 adsInfo.value.splice(index, 1);
             }
         }
-    } catch (error) {
+    } catch (error: any) {
         showError(error.message);
     } finally {
         deleteAdsLanguageDialog.value = false;
@@ -577,7 +575,7 @@ onMounted(async () => {
             
             const dataLanguage = await languagesStore.getLanguages();
             languages.value = dataLanguage.data;
-        } catch (error) {
+        } catch (error: any ) {
             showError(error.message);
         } finally {
             loading2.value = false;
