@@ -2,10 +2,32 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useLayout } from './composables/layout';
 import { useRouter } from 'vue-router';
+import Menu from 'primevue/menu';
+
 const { layoutConfig, onMenuToggle } = useLayout();
 const outsideClickListener = ref(null);
 const topbarMenuActive = ref(true);
 const router = useRouter();
+
+const toggle = (event) => {
+    menu.value.toggle(event);
+};
+const menu = ref();
+const items = ref([
+    {
+        label: 'Options',
+        items: [
+            {
+                label: 'Refresh',
+                icon: 'pi pi-refresh'
+            },
+            {
+                label: 'Export',
+                icon: 'pi pi-upload'
+            }
+        ]
+    }
+]);
 
 onMounted(() => {
     bindOutsideClickListener();
@@ -64,7 +86,7 @@ const isOutsideClicked = (event) => {
     <div class="layout-topbar">
         <router-link to="/" class="layout-topbar-logo">
             <img :src="logoUrl" alt="logo" />
-            <span>ข่าว DPower</span>
+            <span>ข่าว </span>
         </router-link>
 
         <button class="p-link layout-menu-button layout-topbar-button" @click="onMenuToggle()">
@@ -76,20 +98,24 @@ const isOutsideClicked = (event) => {
         </button>
 
         <div class="layout-topbar-menu" :class="topbarMenuClasses">
-            <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">
+            <!-- <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">
                 <i class="pi pi-calendar"></i>
                 <span>Calendar</span>
-            </button>
-            <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">
-                <i class="pi pi-user"></i>
-                <span>Profile</span>
             </button>
             <button @click="onSettingsClick()" class="p-link layout-topbar-button">
                 <i class="pi pi-cog"></i>
                 <span>Settings</span>
+            </button>-->
+            <button @click="toggle" aria-haspopup="true" class="p-link layout-topbar-button">
+                <i class="pi pi-user"></i>
+                <span>Profile</span>
             </button>
+            
+            <Menu ref="menu" id="overlay_menu" :model="items" :popup="true" />
         </div>
     </div>
+
+
 </template>
 
 <style lang="scss" scoped></style>

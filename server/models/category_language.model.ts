@@ -12,17 +12,17 @@ const CategoryLanguage = dbInstance.define('Category_Languages', {
         allowNull: false,
         references: {
             model: 'Categories',
-            key: 'id',
+            key: 'id'
         },
-        onDelete: 'CASCADE',
+        onDelete: 'CASCADE'
     },
     language_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
             model: 'Languages',
-            key: 'id',
-        },
+            key: 'id'
+        }
     },
     title: {
         type: DataTypes.STRING,
@@ -45,7 +45,6 @@ const CategoryLanguage = dbInstance.define('Category_Languages', {
 
 (async () => {
     try {
-       
         console.log('Connection DB_Category_Language has been established successfully.');
 
         await CategoryLanguage.sync({ force: false });

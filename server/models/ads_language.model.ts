@@ -1,6 +1,7 @@
 import { DataTypes } from 'sequelize';
 import dbInstance from '../db_instance';
-
+import Ads from './ads.model';
+import Language from './language.model';
 
 // สร้าง AdsLanguage Model
 const AdsLanguage = dbInstance.define('Ads_Languages', {
@@ -8,23 +9,23 @@ const AdsLanguage = dbInstance.define('Ads_Languages', {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true
-    }, 
+    },
     ads_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
             model: 'Ads',
-            key: 'id',
+            key: 'id'
         },
-        onDelete: 'CASCADE',
+        onDelete: 'CASCADE'
     },
     language_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'Language',
-            key: 'id',
-        },
+            model: 'Languages',
+            key: 'id'
+        }
     },
     title: {
         type: DataTypes.STRING,
@@ -63,10 +64,8 @@ const AdsLanguage = dbInstance.define('Ads_Languages', {
 
 (async () => {
     try {
-
         console.log('Connection DB_Ads_Language has been established successfully.');
-        await AdsLanguage.sync({ force: false });  // Sync Model กับ Database
-        
+        await AdsLanguage.sync({ force: false }); // Sync Model กับ Database
     } catch (error) {
         console.error('Unable to connect to the database or create table:', error);
     } finally {

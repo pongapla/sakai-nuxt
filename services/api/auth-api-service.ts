@@ -7,27 +7,17 @@ const { fetch } = useFetcher();
 
 export const login = async (loginDto: LoginDto) => {
     try {
-        const result = (await fetch(`${server.LOGIN_URL}`, {
-
+        const result = await fetch(`${server.LOGIN_URL}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-
             body: JSON.stringify(loginDto)
-
-        })) as Promise<TLogin>;
+        });
 
         return result;
-
-    } catch (error) {
-
-        console.error('Error:', error);
-        
-        throw {
-            code: 'Not connect network',
-            message: 'Cannot connect to server, please try again'
-        };
-
+    } catch (error: any) {
+        console.error('Error creating user:', error);
+        throw error;
     }
 };

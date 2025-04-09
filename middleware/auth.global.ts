@@ -2,7 +2,6 @@ import { defineNuxtRouteMiddleware, navigateTo } from '#app';
 import { useAuthStore } from '../stores/auth.store';
 
 export default defineNuxtRouteMiddleware(async (to, from) => {
-    
     const authStore = useAuthStore();
     await authStore.restoreSession();
     const isLoggedIn = authStore.session.isLoggedIn;

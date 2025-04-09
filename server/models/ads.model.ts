@@ -60,14 +60,13 @@ const Ads = dbInstance.define('Ads', {
 });
 
 Ads.hasMany(AdsLanguage, { foreignKey: 'ads_id', as: 'adsLanguages', onDelete: 'CASCADE' });
-AdsLanguage.belongsTo(Ads, { foreignKey: 'ads_id', as: 'ads'});
+AdsLanguage.belongsTo(Ads, { foreignKey: 'ads_id', as: 'ads' });
 
 AdsLanguage.belongsTo(Language, { foreignKey: 'language_id', as: 'language' });
 Language.hasMany(AdsLanguage, { foreignKey: 'language_id' });
 
 (async () => {
     try {
-       
         console.log('Connection to DB_Ads has been established successfully.');
 
         await Ads.sync({ force: false });

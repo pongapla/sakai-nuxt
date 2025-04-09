@@ -35,17 +35,13 @@ CategoryLanguage.belongsTo(Language, { foreignKey: 'language_id' });
 Language.hasMany(CategoryLanguage, { foreignKey: 'language_id' });
 
 (async () => {
-
     try {
-
         console.log('Connection DB-Category has been established successfully.');
         await Category.sync({ force: false });
-
     } catch (error) {
         console.error('Unable to connect to the database or create table:', error);
     } finally {
         //await dbInstance.close();
     }
-    
 })();
 export default Category;

@@ -51,7 +51,7 @@
     <!-- Dialog for Add/Edit Team -->
     <div class="grid">
         <div class="col-12 lg:col-6">
-            <Dialog :header="isEditMode ? `Edit Team` : 'New Team'" v-model:visible="display" :breakpoints="{ '960px': '70vw' }" :style="{ width: '40vw', height: '85vh' }" :modal="true" @hide="closeDialog">
+            <Dialog :header="isEditMode ? `Edit Team` : 'New Team'" v-model:visible="display" :breakpoints="{ '960px': '70vw' }" :style="{ width: '40vw', height: 'auto' }" :modal="true" @hide="closeDialog">
                 <hr />
                 <div style="margin-left: 20px">
                     <div class="grid align-items-center" style="display: flex; align-items: center">

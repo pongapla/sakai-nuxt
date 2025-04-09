@@ -575,6 +575,7 @@ onMounted(async () => {
             
             const dataLanguage = await languagesStore.getLanguages();
             languages.value = dataLanguage.data;
+            console.log(languages);
         } catch (error: any ) {
             showError(error.message);
         } finally {

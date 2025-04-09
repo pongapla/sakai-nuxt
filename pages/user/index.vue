@@ -9,17 +9,21 @@
                             <h4 class="text-gray">Management Users</h4>
                         </div>
                         <div class="custom-col input-container">
-                            <InputText type="text" name="search" placeholder="Search" class="underline-input" v-model="userSearchQuery" />
+                            <InputText type="text" name="search" placeholder="Search" class="underline-input"
+                                v-model="userSearchQuery" />
                             <i class="pi pi-search search-icon" @click="search"></i>
                         </div>
                         <div class="custom-col rigthB">
-                            <Button label="Add User" icon="pi pi-plus" severity="success" outlined class="custom-button-size" @click="open" />
+                            <Button label="Add User" icon="pi pi-plus" severity="success" outlined
+                                class="custom-button-size" @click="open" />
                         </div>
                     </div>
 
                     <!-- DataTable -->
                     <div>
-                       <DataTable :value="filteredUserInfo" :scrollable="true" paginator :totalRecords="totalRecords" :lazy="true" :rows="10" :rowsPerPageOptions="[10, 20, 50, 100]" :first="first" @page="onPage" class="mt-3" emptyMessage="No users available." :loading="loading2">
+                        <DataTable :value="filteredUserInfo" :scrollable="true" paginator :totalRecords="totalRecords"
+                            :lazy="true" :rows="10" :rowsPerPageOptions="[10, 20, 50, 100]" :first="first"
+                            @page="onPage" class="mt-3" emptyMessage="No users available." :loading="loading2">
                             <Column field="id" header="ID" style="min-width: 50px" frozen></Column>
                             <Column field="gender" header="Gender" style="min-width: 200px"></Column>
                             <Column field="name" header="Name" style="min-width: 200px" frozen></Column>
@@ -32,14 +36,19 @@
                             <Column field="is_editor" header="Editor" style="min-width: 200px"></Column>
                             <Column field="picture" header="Picture" style="min-width: 200px">
                                 <template #body="slotProps">
-                                    <img :src="slotProps.data.picture ? `/images/users/${slotProps.data.picture}` : '/images/users/no-image-icon.png'" :alt="slotProps.data.image" class="w-24 rounded" width="60" height="50" />
+                                    <img :src="slotProps.data.picture ? `/images/users/${slotProps.data.picture}` : '/images/users/no-image-icon.png'"
+                                        :alt="slotProps.data.image" class="w-24 rounded" width="60" height="50"
+                                        @error="handleImageError" />
                                 </template>
                             </Column>
-                            <Column field="action" header="Action" style="width: auto; text-align: center" frozen alignFrozen="right">
+                            <Column field="action" header="Action" style="width: auto; text-align: center" frozen
+                                alignFrozen="right">
                                 <template #body="slotProps">
                                     <div class="flex justify-content-center">
-                                        <Button icon="pi pi-pencil" outlined rounded class="mr-2" @click="editUser(slotProps.data)" />
-                                        <Button icon="pi pi-trash" outlined rounded severity="danger" @click="confirmDeleteUser(slotProps.data)" />
+                                        <Button icon="pi pi-pencil" outlined rounded class="mr-2"
+                                            @click="editUser(slotProps.data)" />
+                                        <Button icon="pi pi-trash" outlined rounded severity="danger"
+                                            @click="confirmDeleteUser(slotProps.data)" />
                                     </div>
                                 </template>
                             </Column>
@@ -53,7 +62,9 @@
     <!-- Dialog for Add/Edit User -->
     <div class="grid">
         <div class="col-12 lg:col-6">
-            <Dialog :header="isEditMode ? `Edit User` : 'New User'" v-model:visible="display" :breakpoints="{ '960px': '70vw' }" :style="{ width: '40vw', height: '85vh' }" :modal="true" @hide="closeDialog">
+            <Dialog :header="isEditMode ? `Edit User` : 'New User'" v-model:visible="display"
+                :breakpoints="{ '960px': '70vw' }" :style="{ width: '40vw', height: 'auto' }" :modal="true"
+                @hide="closeDialog">
                 <hr />
                 <div style="margin-left: 20px">
                     <div class="grid align-items-center" style="display: flex; align-items: center">
@@ -61,15 +72,18 @@
 
                         <div class="col-12 md:col-3">
                             <div class="field-radiobutton mb-0">
-                                <RadioButton id="registrant" name="option" :value="true" v-model="formData.is_registrant" @change="toggleUserType('registrant')" />
+                                <RadioButton id="registrant" name="option" :value="true"
+                                    v-model="formData.is_registrant" @change="toggleUserType('registrant')" />
                                 <label for="registrant">Registrant</label>
                             </div>
                         </div>
                         <div class="col-12 md:col-6">
                             <div class="field-radiobutton mb-0">
-                                <RadioButton id="shop" name="option" :value="true" v-model="formData.is_shop" @change="toggleUserType('shop')" />
+                                <RadioButton id="shop" name="option" :value="true" v-model="formData.is_shop"
+                                    @change="toggleUserType('shop')" />
                                 <label class="mr-2" for="shop">Shop</label>
-                                <small v-if="errorMessages.userType" class="p-error">{{ errorMessages.userType }}</small>
+                                <small v-if="errorMessages.userType" class="p-error">{{ errorMessages.userType
+                                    }}</small>
                             </div>
                         </div>
                     </div>
@@ -88,12 +102,13 @@
                                 <small v-if="errorMessages.gender" class="p-error">{{ errorMessages.gender }}</small>
                             </div>
                         </div>
-                        
+
                     </div>
                     <div class="grid align-items-center mt-2" style="display: flex; align-items: center">
                         <h5 style="margin-right: 0px; padding-top: 20px">Username :</h5>
                         <div class="col-12 mb-2 lg:col-8 lg:mb-0">
-                            <InputText type="text" placeholder="Username" v-model="formData.userName" class="custom-input" />
+                            <InputText type="text" placeholder="Username" v-model="formData.userName"
+                                class="custom-input" />
                             <small v-if="errorMessages.userName" class="p-error">{{ errorMessages.userName }}</small>
                         </div>
                     </div>
@@ -107,9 +122,10 @@
                     <div class="grid align-items-center mt-2" style="display: flex; align-items: center">
                         <h5 style="margin-right: 0px; padding-top: 20px">Password :</h5>
                         <div class="col-12 mb-2 lg:col-8 lg:mb-0">
-                            <InputText :disabled="isEditMode" type="password" placeholder="Password" v-model="formData.password" class="custom-input" />
+                            <InputText :disabled="isEditMode" type="password" placeholder="Password"
+                                v-model="formData.password" class="custom-input" />
                             <small v-if="errorMessages.password" class="p-error">{{ errorMessages.password }}</small>
-                          </div>
+                        </div>
                     </div>
                     <div class="grid align-items-center mt-2" style="display: flex; align-items: center">
                         <h5 style="margin-right: 0px; padding-top: 20px">Email :</h5>
@@ -128,12 +144,14 @@
                     <div class="grid align-items-center mt-2" style="display: flex; align-items: center">
                         <h5 style="margin-right: 0px; padding-top: 20px">File</h5>
                         <div class="col-12 mb-2 lg:col-8 lg:mb-0">
-                            <FileUpload ref="fileupload" mode="basic" name="picture" accept="image/*" :maxFileSize="1000000" @select="onUpload" />
+                            <FileUpload ref="fileupload" mode="basic" name="picture" accept="image/*"
+                                :maxFileSize="1000000" @select="onUpload" />
                         </div>
                     </div>
                 </div>
                 <div class="mt-2" style="text-align: right">
-                    <Button label="Cancel" @click="closeDialog" icon="pi pi-times" class="p-button-outlined" :style="{ color: 'red', borderColor: 'red', marginRight: '10px' }" />
+                    <Button label="Cancel" @click="closeDialog" icon="pi pi-times" class="p-button-outlined"
+                        :style="{ color: 'red', borderColor: 'red', marginRight: '10px' }" />
                     <Button label="Save" @click="save" icon="pi pi-check" class="p-button-outlined" />
                 </div>
             </Dialog>
@@ -330,7 +348,7 @@ const addUser = async (formDataObject: any) => {
         const result = await userStore.createUser(formDataObject);
         userInfo.value.push(result.data);
         showSuccess('User added successfully!');
-    } catch (error) {
+    } catch (error: any) {
 
         console.error('Error while adding user: ', error.message);
         showError(error.message);
@@ -350,7 +368,7 @@ const updateUser = async (formDataObject: any) => {
         if (index !== -1) {
             userInfo.value[index] = updatedUser;
         }
-    } catch (error) {
+    } catch (error: any) {
 
         console.error('Error while update user: ', error.message);
         showError(error.message);
@@ -365,7 +383,8 @@ const updateUser = async (formDataObject: any) => {
 const editUser = (user: any) => {
 
     Object.assign(formData, user);
-
+    console.log(formData);
+    console.log(user);
     isEditMode.value = true;
     open();
 };
@@ -385,7 +404,7 @@ const deleteSelectedUser = async () => {
         deleteUserDialog.value = false;
         const result = await userStore.deleteUser(selectedUser.value.id);
 
-    } catch (error) {
+    } catch (error: any) {
 
         showError(error.message);
 
@@ -399,7 +418,7 @@ const deleteSelectedUser = async () => {
 const filteredUserInfo = computed(() => {
 
     const filteredData = userInfo.value.filter(
-        (user) => user.name.toLowerCase().includes(userSearchQuery.value.toLowerCase()) || user.email.toLowerCase().includes(userSearchQuery.value.toLowerCase()) || user.userName?.toLowerCase().includes(userSearchQuery.value.toLowerCase())
+        (user) => user?.name?.toLowerCase().includes(userSearchQuery.value.toLowerCase()) || user?.email?.toLowerCase().includes(userSearchQuery.value.toLowerCase()) || user?.userName?.toLowerCase().includes(userSearchQuery.value.toLowerCase())
     );
     return filteredData;
 });
@@ -559,6 +578,9 @@ watch(
   }
 );
 
+const handleImageError = (event: any) => {
+    event.target.src = "/images/users/no-image-icon.png"; 
+}
 </script>
 
 <style scoped>
