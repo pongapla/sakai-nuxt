@@ -11,7 +11,6 @@ import { useCookie } from '#app';
 export const useAuthStore = defineStore('auth', () => {
     const userName = useCookie(server.USERNAME);
     const token = useCookie(server.TOKEN_KEY);
-    const fetchingStatus = ref<FetchingStatus>(FetchingStatus.init);
     const session = reactive<TSession>({ isLoggedIn: false, userName: undefined });
     const router = useRouter();
     const api = useApi();
@@ -27,24 +26,20 @@ export const useAuthStore = defineStore('auth', () => {
 
     const login = async (loginDto: LoginDto) => {
         try {
-            fetchingStatus.value = FetchingStatus.fetching;
             await new Promise((resolve) => setTimeout(resolve, 100));
             const data = await api.login(loginDto);
 
             if (data.status === 'success') {
                 token.value = 'DUMP TOKEN';
                 userName.value = data.data.userName;
-                fetchingStatus.value = FetchingStatus.success;
+
                 session.isLoggedIn = true;
             } else {
-                console.log('step 3.1 else');
                 session.isLoggedIn = false;
-                fetchingStatus.value = FetchingStatus.failed;
             }
 
             return data;
         } catch (error) {
-            fetchingStatus.value = FetchingStatus.failed;
             console.log(error);
         }
     };
@@ -57,9 +52,7 @@ export const useAuthStore = defineStore('auth', () => {
         return await router.push('/auth/login');
     };
 
-    const isLoading = () => fetchingStatus.value === FetchingStatus.fetching;
-
-    return { session, login, logout, isLoading, restoreSession };
+    return { session, login, logout, restoreSession };
 });
 
 export default useAuthStore;

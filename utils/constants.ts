@@ -10,7 +10,7 @@ export const server = {
     NEWS_URL: `News`,
     USER_URL: `user`,
     TRANSACTION_URL: `transaction`,
-    TOKEN_KEY: `token`,
+    TOKEN_KEY: `dzZseYq7KRCPdCtWlMBWV62XofrFyVlaKeqiz3FeyQtf31IWk6VfrykoR3454eYO`,
     USERNAME: `userName`,
     CATEGORY_URL: `category`,
     LANGUAGE_URL: `language`,

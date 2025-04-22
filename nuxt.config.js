@@ -89,5 +89,5 @@ export default defineNuxtConfig({
   },
   publicPath: '/_nuxt/',
   css: ['primeicons/primeicons.css', 'primeflex/primeflex.scss', 'primevue/resources/primevue.min.css', '@/assets/styles.scss'],
-  spaLoadingTemplate: 'spa-loading-template.html'
+  ssr: false,
 });
