@@ -17,31 +17,24 @@ export const clearAuthorizationHeader = () => {
 };
 
 export const useFetcher = () => {
-
     const fetcher = async (url: string, options?: RequestInit | any) => {
-
         try {
-            
             url = url.startsWith('/') ? url : `/${url}`;
 
             const absoluteUrl = isAbsoluteURLRegex.test(url) ? url : `${apiUrl}${url}`;
-            
+
             const response = (await $fetch(absoluteUrl, {
                 ...fetchConfig,
                 ...options
             })) as any;
-           
+
             return await response;
-
         } catch (error: any) {
-
             throw error;
         }
     };
 
     return {
-
         fetch: fetcher
-        
     };
 };

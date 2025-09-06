@@ -9,21 +9,30 @@
                             <h4 class="text-gray">Management Users</h4>
                         </div>
                         <div class="custom-col input-container">
-                            <InputText type="text" name="search" placeholder="Search" class="underline-input"
-                                v-model="userSearchQuery" />
+                            <InputText type="text" name="search" placeholder="Search" class="underline-input" v-model="userSearchQuery" />
                             <i class="pi pi-search search-icon" @click="search"></i>
                         </div>
                         <div class="custom-col rigthB">
-                            <Button label="Add User" icon="pi pi-plus" severity="success" outlined
-                                class="custom-button-size" @click="open" />
+                            <Button label="Add User" icon="pi pi-plus" severity="success" outlined class="custom-button-size" @click="open" />
                         </div>
                     </div>
 
                     <!-- DataTable -->
                     <div>
-                        <DataTable :value="filteredUserInfo" :scrollable="true" paginator :totalRecords="totalRecords"
-                            :lazy="true" :rows="10" :rowsPerPageOptions="[10, 20, 50, 100]" :first="first"
-                            @page="onPage" class="mt-3" emptyMessage="No users available." :loading="loading2">
+                        <DataTable
+                            :value="filteredUserInfo"
+                            :scrollable="true"
+                            paginator
+                            :totalRecords="totalRecords"
+                            :lazy="true"
+                            :rows="10"
+                            :rowsPerPageOptions="[10, 20, 50, 100]"
+                            :first="first"
+                            @page="onPage"
+                            class="mt-3"
+                            emptyMessage="No users available."
+                            :loading="loading2"
+                        >
                             <Column field="id" header="ID" style="min-width: 50px" frozen></Column>
                             <Column field="gender" header="Gender" style="min-width: 200px"></Column>
                             <Column field="name" header="Name" style="min-width: 200px" frozen></Column>
@@ -36,19 +45,21 @@
                             <Column field="is_editor" header="Editor" style="min-width: 200px"></Column>
                             <Column field="picture" header="Picture" style="min-width: 200px">
                                 <template #body="slotProps">
-                                    <img :src="slotProps.data.picture ? `/images/users/${slotProps.data.picture}` : '/images/users/no-image-icon.png'"
-                                        :alt="slotProps.data.image" class="w-24 rounded" width="60" height="50"
-                                        @error="handleImageError" />
+                                    <img
+                                        :src="slotProps.data.picture ? `/images/users/${slotProps.data.picture}` : '/images/users/no-image-icon.png'"
+                                        :alt="slotProps.data.image"
+                                        class="w-24 rounded"
+                                        width="60"
+                                        height="50"
+                                        @error="handleImageError"
+                                    />
                                 </template>
                             </Column>
-                            <Column field="action" header="Action" style="width: auto; text-align: center" frozen
-                                alignFrozen="right">
+                            <Column field="action" header="Action" style="width: auto; text-align: center" frozen alignFrozen="right">
                                 <template #body="slotProps">
                                     <div class="flex justify-content-center">
-                                        <Button icon="pi pi-pencil" outlined rounded class="mr-2"
-                                            @click="editUser(slotProps.data)" />
-                                        <Button icon="pi pi-trash" outlined rounded severity="danger"
-                                            @click="confirmDeleteUser(slotProps.data)" />
+                                        <Button icon="pi pi-pencil" outlined rounded class="mr-2" @click="editUser(slotProps.data)" />
+                                        <Button icon="pi pi-trash" outlined rounded severity="danger" @click="confirmDeleteUser(slotProps.data)" />
                                     </div>
                                 </template>
                             </Column>
@@ -62,9 +73,7 @@
     <!-- Dialog for Add/Edit User -->
     <div class="grid">
         <div class="col-12 lg:col-6">
-            <Dialog :header="isEditMode ? `Edit User` : 'New User'" v-model:visible="display"
-                :breakpoints="{ '960px': '70vw' }" :style="{ width: '40vw', height: 'auto' }" :modal="true"
-                @hide="closeDialog">
+            <Dialog :header="isEditMode ? `Edit User` : 'New User'" v-model:visible="display" :breakpoints="{ '960px': '70vw' }" :style="{ width: '40vw', height: 'auto' }" :modal="true" @hide="closeDialog">
                 <hr />
                 <div style="margin-left: 20px">
                     <div class="grid align-items-center" style="display: flex; align-items: center">
@@ -72,18 +81,15 @@
 
                         <div class="col-12 md:col-3">
                             <div class="field-radiobutton mb-0">
-                                <RadioButton id="registrant" name="option" :value="true"
-                                    v-model="formData.is_registrant" @change="toggleUserType('registrant')" />
+                                <RadioButton id="registrant" name="option" :value="true" v-model="formData.is_registrant" @change="toggleUserType('registrant')" />
                                 <label for="registrant">Registrant</label>
                             </div>
                         </div>
                         <div class="col-12 md:col-6">
                             <div class="field-radiobutton mb-0">
-                                <RadioButton id="shop" name="option" :value="true" v-model="formData.is_shop"
-                                    @change="toggleUserType('shop')" />
+                                <RadioButton id="shop" name="option" :value="true" v-model="formData.is_shop" @change="toggleUserType('shop')" />
                                 <label class="mr-2" for="shop">Shop</label>
-                                <small v-if="errorMessages.userType" class="p-error">{{ errorMessages.userType
-                                    }}</small>
+                                <small v-if="errorMessages.userType" class="p-error">{{ errorMessages.userType }}</small>
                             </div>
                         </div>
                     </div>
@@ -102,13 +108,11 @@
                                 <small v-if="errorMessages.gender" class="p-error">{{ errorMessages.gender }}</small>
                             </div>
                         </div>
-
                     </div>
                     <div class="grid align-items-center mt-2" style="display: flex; align-items: center">
                         <h5 style="margin-right: 0px; padding-top: 20px">Username :</h5>
                         <div class="col-12 mb-2 lg:col-8 lg:mb-0">
-                            <InputText type="text" placeholder="Username" v-model="formData.userName"
-                                class="custom-input" />
+                            <InputText type="text" placeholder="Username" v-model="formData.userName" class="custom-input" />
                             <small v-if="errorMessages.userName" class="p-error">{{ errorMessages.userName }}</small>
                         </div>
                     </div>
@@ -122,8 +126,7 @@
                     <div class="grid align-items-center mt-2" style="display: flex; align-items: center">
                         <h5 style="margin-right: 0px; padding-top: 20px">Password :</h5>
                         <div class="col-12 mb-2 lg:col-8 lg:mb-0">
-                            <InputText :disabled="isEditMode" type="password" placeholder="Password"
-                                v-model="formData.password" class="custom-input" />
+                            <InputText :disabled="isEditMode" type="password" placeholder="Password" v-model="formData.password" class="custom-input" />
                             <small v-if="errorMessages.password" class="p-error">{{ errorMessages.password }}</small>
                         </div>
                     </div>
@@ -144,14 +147,12 @@
                     <div class="grid align-items-center mt-2" style="display: flex; align-items: center">
                         <h5 style="margin-right: 0px; padding-top: 20px">File</h5>
                         <div class="col-12 mb-2 lg:col-8 lg:mb-0">
-                            <FileUpload ref="fileupload" mode="basic" name="picture" accept="image/*"
-                                :maxFileSize="1000000" @select="onUpload" />
+                            <FileUpload ref="fileupload" mode="basic" name="picture" accept="image/*" :maxFileSize="1000000" @select="onUpload" />
                         </div>
                     </div>
                 </div>
                 <div class="mt-2" style="text-align: right">
-                    <Button label="Cancel" @click="closeDialog" icon="pi pi-times" class="p-button-outlined"
-                        :style="{ color: 'red', borderColor: 'red', marginRight: '10px' }" />
+                    <Button label="Cancel" @click="closeDialog" icon="pi pi-times" class="p-button-outlined" :style="{ color: 'red', borderColor: 'red', marginRight: '10px' }" />
                     <Button label="Save" @click="save" icon="pi pi-check" class="p-button-outlined" />
                 </div>
             </Dialog>
@@ -180,7 +181,6 @@ import FileUpload from 'primevue/fileupload';
 import InputText from 'primevue/inputtext';
 import { useCustomToast } from '../../composables/useToast';
 
-
 const display = ref(false);
 const isEditMode = ref(false);
 const loading2 = ref(false);
@@ -197,30 +197,27 @@ const totalRecords = ref(0);
 const { showSuccess, showError } = useCustomToast();
 
 const onPage = (event: any) => {
-  first.value = event.first;
-  rows.value = event.rows;
-  loadPageData();
+    first.value = event.first;
+    rows.value = event.rows;
+    loadPageData();
 };
 
 const loadPageData = async () => {
-  loading2.value = true;
-  
-  setTimeout(async () => {
+    loading2.value = true;
 
-    try {
-
-      const response = await userStore.getUsers(first.value.toString(), rows.value.toString());
-      if (response.status === 'success') {
-        userInfo.value = response.data;
-        totalRecords.value = response.totalCount;
-      }
-
-    } catch (error) {
-      console.error('Error loading page data:', error);
-    } finally {
-      loading2.value = false;
-    }
-  }, 1000);
+    setTimeout(async () => {
+        try {
+            const response = await userStore.getUsers(first.value.toString(), rows.value.toString());
+            if (response.status === 'success') {
+                userInfo.value = response.data;
+                totalRecords.value = response.totalCount;
+            }
+        } catch (error) {
+            console.error('Error loading page data:', error);
+        } finally {
+            loading2.value = false;
+        }
+    }, 1000);
 };
 
 const formData = reactive({
@@ -253,14 +250,14 @@ const initialFormData = {
 };
 
 let errorMessages = reactive({
-  name: '',
-  userName: '',
-  email: '',
-  phone: '',
-  password: '',
-  gender: '',
-  userType: ''
-})
+    name: '',
+    userName: '',
+    email: '',
+    phone: '',
+    password: '',
+    gender: '',
+    userType: ''
+});
 
 const initialErroMessages = {
     name: '',
@@ -270,7 +267,7 @@ const initialErroMessages = {
     password: '',
     gender: '',
     userType: ''
-}
+};
 
 const resetForm = () => {
     Object.assign(formData, initialFormData);
@@ -278,13 +275,13 @@ const resetForm = () => {
 
 const resetError = () => {
     Object.assign(errorMessages, initialErroMessages);
-}
+};
 const search = async () => {
     loading2.value = true;
 
     try {
         if (userSearchQuery.value === '') {
-            const data = await userStore.getUsers(first.value.toString(),rows.value.toString());
+            const data = await userStore.getUsers(first.value.toString(), rows.value.toString());
             userInfo.value = data.data;
         } else {
             const filteredUsers = userInfo.value.filter(
@@ -299,28 +296,22 @@ const search = async () => {
     }
 };
 
-
 const open = () => {
     display.value = true;
 };
 
-
 const closeDialog = () => {
-    
     display.value = false;
     isEditMode.value = false;
     resetForm();
     resetError();
 };
 
-
 const onUpload = (event: any) => {
-
     files.value = event.files;
 };
 
 const save = () => {
-
     if (!validateForm()) {
         console.log('Form validation failed');
         return;
@@ -343,23 +334,18 @@ const save = () => {
 };
 
 const addUser = async (formDataObject: any) => {
-  
     try {
         const result = await userStore.createUser(formDataObject);
         userInfo.value.push(result.data);
         showSuccess('User added successfully!');
     } catch (error: any) {
-
         console.error('Error while adding user: ', error.message);
         showError(error.message);
-
     } finally {
-
     }
 };
 
 const updateUser = async (formDataObject: any) => {
-
     try {
         const result = await userStore.updateUser(formDataObject);
         const updatedUser = result.data;
@@ -369,19 +355,14 @@ const updateUser = async (formDataObject: any) => {
             userInfo.value[index] = updatedUser;
         }
     } catch (error: any) {
-
         console.error('Error while update user: ', error.message);
         showError(error.message);
-
     } finally {
-
         showSuccess('User update successfully!');
-
     }
 };
 
 const editUser = (user: any) => {
-
     Object.assign(formData, user);
     console.log(formData);
     console.log(user);
@@ -390,68 +371,46 @@ const editUser = (user: any) => {
 };
 
 const confirmDeleteUser = (user: any) => {
-    
     deleteUserDialog.value = true;
-    selectedUser.value = user; 
-
+    selectedUser.value = user;
 };
 
 const deleteSelectedUser = async () => {
-
     if (!selectedUser.value) return;
     try {
-
         deleteUserDialog.value = false;
         const result = await userStore.deleteUser(selectedUser.value.id);
-
     } catch (error: any) {
-
         showError(error.message);
-
     } finally {
-
         showSuccess('User delete successfully!');
-
     }
 };
 
 const filteredUserInfo = computed(() => {
-
     const filteredData = userInfo.value.filter(
         (user) => user?.name?.toLowerCase().includes(userSearchQuery.value.toLowerCase()) || user?.email?.toLowerCase().includes(userSearchQuery.value.toLowerCase()) || user?.userName?.toLowerCase().includes(userSearchQuery.value.toLowerCase())
     );
     return filteredData;
 });
 
-
 onMounted(async () => {
-
     loading2.value = true;
 
     setTimeout(async () => {
-
-    try {
-
-        const data = await userStore.getUsers(first.value.toString(),rows.value.toString());
-        userInfo.value = data.data;
-        totalRecords.value = data.totalCount;
-       
-
-    } catch (error) {
-
-        console.error('Error fetching users:', error);
-
-    } finally {
-
-        loading2.value = false;
-
-    }
-}, 1000);
+        try {
+            const data = await userStore.getUsers(first.value.toString(), rows.value.toString());
+            userInfo.value = data.data;
+            totalRecords.value = data.totalCount;
+        } catch (error) {
+            console.error('Error fetching users:', error);
+        } finally {
+            loading2.value = false;
+        }
+    }, 1000);
 });
 
-
 const toggleUserType = (type: string) => {
-
     if (type === 'registrant') {
         formData.is_shop = false;
     }
@@ -462,7 +421,6 @@ const toggleUserType = (type: string) => {
 };
 
 const validateForm = () => {
-    
     let isValid = true;
 
     if (!formData.name) {
@@ -484,103 +442,100 @@ const validateForm = () => {
         }
     }
     if (!formData.phone) {
-      errorMessages.phone = 'Phone number is required.';
-      isValid = false;
+        errorMessages.phone = 'Phone number is required.';
+        isValid = false;
     } else if (!/^\d{10}$/.test(formData.phone)) {
-      errorMessages.phone = 'Phone number must be 10 digits.';
-      isValid = false;
+        errorMessages.phone = 'Phone number must be 10 digits.';
+        isValid = false;
     } else {
-      errorMessages.phone = '';
+        errorMessages.phone = '';
     }
     if (!formData.password) {
-      errorMessages.password = 'Password is required.';
-      isValid = false;
-    } else if (formData.password.length < 6) { 
-      errorMessages.password = 'Password must be at least 6 characters long.';
-      isValid = false;
+        errorMessages.password = 'Password is required.';
+        isValid = false;
+    } else if (formData.password.length < 6) {
+        errorMessages.password = 'Password must be at least 6 characters long.';
+        isValid = false;
     } else {
-      errorMessages.password = '';
+        errorMessages.password = '';
     }
     if (!formData.gender) {
         errorMessages.gender = 'Gender is required.';
         isValid = false;
     }
     if (!formData.is_shop && !formData.is_registrant) {
-    errorMessages.userType = 'At least one of UserType (registrant or shop) is required.';
-    isValid = false;
+        errorMessages.userType = 'At least one of UserType (registrant or shop) is required.';
+        isValid = false;
     }
     return isValid;
-}
+};
 
 watch(
-  () => [ formData.is_shop, formData.is_registrant, formData.gender, formData.userName, formData.name, formData.password, formData.email, formData.phone],
-  ([ newIsregistrant, newIsshop, newGender, newUserName, newName, newPassword, newEmail, newPhone]) => {
-    
-    if (!newIsregistrant && !newIsshop) {
-      errorMessages.userType = 'At least one of UserType (registrant or shop) is required.';
-    } else {
-      errorMessages.userType = '';
-    }
-   
-    if (!newGender) {
-      errorMessages.gender = 'Gender is required.';
-    } else {
-      errorMessages.gender = '';
-    }
-    if (!newUserName) {
-      errorMessages.userName = 'UserName is required.';
-    } else {
-      errorMessages.userName = '';
-    }
-    if (!newName) {
-      errorMessages.name = 'Name is required.';
-    } else {
-      errorMessages.name = '';
-    }
-    if (typeof newPassword === 'string') {
-      if (!newPassword) {
-        errorMessages.password = 'Password is required.';
-      } else if (newPassword.length < 6) {
-        errorMessages.password = 'Password must be at least 6 characters long.';
-      } else {
-        errorMessages.password = '';
-      }
-      } else {
-        errorMessages.password = 'Invalid password format.';
-      }
-    
-    if (typeof newEmail === 'string') {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!newEmail) {
-        errorMessages.email = 'Email is required.';
-      } else if (!emailRegex.test(newEmail)) {
-        errorMessages.email = 'Invalid email format.';
-      } else {
-        errorMessages.email = '';
-      }
-    } else {
-      errorMessages.email = 'Invalid email format.';
-    }
-    if (typeof newPhone === 'string') {
-      
-      const phoneRegex = /^\d{10}$/;
-      if (!newPhone) {
-        errorMessages.phone = 'Phone number is required.';
-      } else if (!phoneRegex.test(newPhone)) {
-        errorMessages.phone = 'Phone number must be 10 digits.';
-      } else {
-        errorMessages.phone = '';
-      }
-    } else {
-      errorMessages.phone = 'Invalid phone number format.';
-    }
+    () => [formData.is_shop, formData.is_registrant, formData.gender, formData.userName, formData.name, formData.password, formData.email, formData.phone],
+    ([newIsregistrant, newIsshop, newGender, newUserName, newName, newPassword, newEmail, newPhone]) => {
+        if (!newIsregistrant && !newIsshop) {
+            errorMessages.userType = 'At least one of UserType (registrant or shop) is required.';
+        } else {
+            errorMessages.userType = '';
+        }
 
-  }
+        if (!newGender) {
+            errorMessages.gender = 'Gender is required.';
+        } else {
+            errorMessages.gender = '';
+        }
+        if (!newUserName) {
+            errorMessages.userName = 'UserName is required.';
+        } else {
+            errorMessages.userName = '';
+        }
+        if (!newName) {
+            errorMessages.name = 'Name is required.';
+        } else {
+            errorMessages.name = '';
+        }
+        if (typeof newPassword === 'string') {
+            if (!newPassword) {
+                errorMessages.password = 'Password is required.';
+            } else if (newPassword.length < 6) {
+                errorMessages.password = 'Password must be at least 6 characters long.';
+            } else {
+                errorMessages.password = '';
+            }
+        } else {
+            errorMessages.password = 'Invalid password format.';
+        }
+
+        if (typeof newEmail === 'string') {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!newEmail) {
+                errorMessages.email = 'Email is required.';
+            } else if (!emailRegex.test(newEmail)) {
+                errorMessages.email = 'Invalid email format.';
+            } else {
+                errorMessages.email = '';
+            }
+        } else {
+            errorMessages.email = 'Invalid email format.';
+        }
+        if (typeof newPhone === 'string') {
+            const phoneRegex = /^\d{10}$/;
+            if (!newPhone) {
+                errorMessages.phone = 'Phone number is required.';
+            } else if (!phoneRegex.test(newPhone)) {
+                errorMessages.phone = 'Phone number must be 10 digits.';
+            } else {
+                errorMessages.phone = '';
+            }
+        } else {
+            errorMessages.phone = 'Invalid phone number format.';
+        }
+    }
 );
 
 const handleImageError = (event: any) => {
-    event.target.src = "/images/users/no-image-icon.png"; 
-}
+    event.target.src = '/images/users/no-image-icon.png';
+};
 </script>
 
 <style scoped>
@@ -660,5 +615,4 @@ const handleImageError = (event: any) => {
     border-bottom: 2px solid #ccc;
     outline: none;
 }
-
 </style>
